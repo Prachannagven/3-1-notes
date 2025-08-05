@@ -33,7 +33,6 @@
 *.bkp
 
 # Output files
-*.pdf
 *.ps
 
 # Editor and OS-specific
