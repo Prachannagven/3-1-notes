@@ -1,0 +1,17 @@
+# Fdb version 4
+["lualatex"] 1754371106.38119 "lab1-ans.tex" "lab1-ans.pdf" "lab1-ans" 1754371106.68357 2
+  "/usr/share/texlive/texmf-dist/tex/latex/base/article.cls" 1738182759 20144 63d8bacaf52e5abf4db3bc322373e1d4 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/ltluatex.lua" 1738182759 24595 fec17c41a4fb5260392d99b075389427 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo" 1738182759 8448 5cf247d4bd0c7d5d711bbbdf111fae2e ""
+  "/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.lua" 1738271527 18205 41a3b1affcb43654ae7670d3749a7ee5 ""
+  "/usr/share/texlive/texmf-dist/tex/latex/tex-ini-files/lualatexquotejobname.lua" 1739226701 1020 36d4dc663e02d83b566558c712569e2d ""
+  "/usr/share/texmf/fonts/tfm/public/lm/rm-lmr10.tfm" 1254269338 11868 4f81e9b6033c032bdaf9884f4d7ef412 ""
+  "/usr/share/texmf/tex/latex/lm/ot1lmr.fd" 1616454256 1882 28c08db1407ebff35a658fd141753d16 ""
+  "/var/lib/texmf/web2c/luahbtex/lualatex.fmt" 1754201925 5712710 6f50a9ba9c569532fca7ba7f32f3c812 ""
+  "lab1-ans.aux" 1754370979.94961 328 71525f98c6b43afa624bc7f956a81f2a "lualatex"
+  "lab1-ans.tex" 1754371101.94576 1048 870bdafa206752e25c29969859a0ee81 ""
+  (generated)
+  "lab1-ans.aux"
+  "lab1-ans.log"
+  "lab1-ans.pdf"
+  (rewritten before read)
