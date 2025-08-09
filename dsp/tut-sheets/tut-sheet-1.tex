@@ -1,0 +1,101 @@
+\documentclass{article}
+
+\usepackage{mathtools}
+\usepackage{geometry}
+\usepackage{amssymb}
+%Custom Commands
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+ 	left=20mm,
+ 	top=20mm
+ }
+
+ \mathtoolsset{showonlyrefs}
+\begin{document}
+	\begin{center}
+		\large
+		\textbf{Tutorial Sheet 1 Solutions}\\
+		\large
+		\textbf{ECE F434: Digital Signal Processing}\\
+		\normalsize
+		\textbf{07/08/2025}
+	\end{center}
+	\begin{enumerate}
+		\item Answer the following Questions 
+		\begin{enumerate}
+			\item Check the following functions for linearity. 
+			\begin{enumerate}
+				\item $y[n] = Ax[n] + B$ where $A$ and $B$ are constants.
+			
+				\textbf{Answer:} Use the linearity property $y[a + b] = y[a] + y[b]$.
+					\begin{align}
+						\text{Let: }y_1[n] &= Ax_1[n] + B \text{ and } y_2[n] = Ax_2[n] + B \\
+						\textbf{Additivity Test: }\\
+						y[n] &= A(x_1[n] + x_2[n]) + B \\
+						y[n] &= Ax_1[n] + B + Ax_2[n] + B = A(x_1[n] + x_2[n]) + 2B
+					\end{align}
+					You'll see that the two equations are not equal, as such this function is non linear.
+				\item $y[n] = x[n^2]$\\
+					\textbf{Answer:} Similarly to above, we see that:
+					\begin{align}
+						\text{Let: }y_1[n] &= Ax_1[n] + B \text{ and } y_2[n] = Ax_2[n] + B \\
+						\textbf{Additivity Test: }\\
+						y[n] &= y_1[n] + y_2[n]\\
+						y[n] &= x_1[n^2] + x_2[n^2]
+					\end{align}
+					Given that both of the equations are the same, we can conclude that this function is linear. 	
+			\end{enumerate}
+		\end{enumerate}
+		\item  The following two signals are available. Find the cross correlation.
+		\begin{align}
+			x[n] = \{... , 0, 0, 2, -1, 3, 7,\mathbf{1} , 2, -3, 0, 0, ...\}\\
+			y[n] = \{... , 0, 0, 1, -1, 2, -2, \mathbf{4}, 1, -2, 5, 0, 0, ...\}
+		\end{align}		
+		\textbf{Answer: } \\
+		Cross correlation is given by
+		\begin{align}
+			r_{xy} = \sum_{n = -\infty}^{\infty} x[n] y[n-l] \forall l
+		\end{align}
+		As such, for the values of $l$ as 0, 1 and -1:
+		\begin{align}
+			r_{xy}(0) = 2 + 1 + 6 - 14 + 4 + 2 + 6 = 7 \\
+			r_{xy}(1) =-1 - 3 + 14 - 2 + 8 - 3 = 13 \\
+			r_{xy}(-1) = -2 - 2 - 6 + 28 + 1 -4 - 14 = 0
+		\end{align}
+		You may follow the same method for the remaineder of the values of $l$.
+		\item The fibonnaci sequence is defined by:
+			\begin{align}
+				f[n] = f[n-1] + f[n-2] \hspace{1cm}
+			\end{align}
+			\begin{enumerate}
+				\item Develop a direct formula to calculate $f[n]$ only based on $n$
+					\textbf{Answer: }\\
+					Let $f[n] = \alpha r^n$
+					\begin{align}
+						\therefore \alpha r^n - \alpha r^{n-1} - \alpha r^{n-2} = 0\\
+						\frac{1 \pm \sqrt{5}}{2} \\
+						\therefore f[n] = \frac{1}{\sqrt{5}} \left(\frac{1 + \sqrt{5}}{2}\right) - \frac{1}{\sqrt{5}} \left(\frac{1 - \sqrt{5}}{2}\right)
+					\end{align}
+				\item Show that $y[n]$ can also be represented by the LTI system $y[n] = y[n-1] + y[n-2] + x[n-1]$.
+
+					\textbf{Answer :}\\ 
+					When $x[n]$ is an impulse ($\delta (n)$), the sequence begins with 0 at origin, 1 at $n = 1$ and then continues as the fibonnaci seqnuence must go by. As such, this system is  avalid representation of the Fibonnaci series.
+			\end{enumerate}
+		\item Let $x[n]$ and $y[n]$ be two independent zero mean WSS random signals with autocorrelations $R_{xx}$ and $R_{yy}$. Consider a random singal $v[n]$ obtained by a linear combination of $x$ and $y$. Express that autocorrelation and cross correlations $R_{vx}$, $R_{vy}$ and $R_{vv}$ in terms of $R_{xx}$ and $R_{yy}$.
+
+			\textbf{Answer: }\\
+
+			Let: 
+			\begin{equation}
+				v[n] = ax[n] + by[n]
+			\end{equation}
+			From here, we can easily find the autocorrelation:
+			\begin{equation}
+				R_{vv} = E(v[n+m]v[m]) = a^2R_{xx} + b^2R_{yy}
+			\end{equation}
+			
+	\end{enumerate}
+	
+\end{document}
+
