@@ -6,10 +6,19 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{geometry}
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt} % full-width rule
+\fancyhead[L]{EEE F313: ADVD Lab 1 Report}
+\fancyhead[R]{Pramit Pal}
+\fancyfoot[C]{\thepage}
+
 \geometry{a4paper, margin=1in}
 \title{EEE F313: ADVD Lab 1 Report}
-\author{Student ID: 2023AAPS0013P}
-\date{\today}
+\author{Pramit Pal \\ 2023AAPS0765}
+\date{}
 
 \begin{document}
 \maketitle
@@ -86,6 +95,7 @@ The following graph was obtained for $I_D$ vs $V_{GS}$ for the PMOS circuit from
 	\caption{$I_D$ vs $V_{GS}$ for PMOS}
 	\label{fig:pmos-id-vs-vds}
 \end{figure}
+
 You can see the sharp cutoff at a certain voltage of $V_{GS}$, which indicates the threshold voltage $V_{th}$.
 
 \end{document}
