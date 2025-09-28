@@ -1,0 +1,101 @@
+\documentclass{report}
+
+\input{preamble}
+\input{macros}
+\input{letterfonts}
+
+\title{ECE F331: Communication Systems\\Notes + Problems}
+\author{Pranav Chandra N. V. \\ 2023AAPS0013P}
+\date{}
+
+\begin{document}
+
+\maketitle
+% \pdfbookmark[<level>]{<title>}{<dest>}
+\pdfbookmark[1]{\contentsname}{toc}
+\tableofcontents
+\pagebreak
+
+\chapter{Module 1}
+\section{Classroom Problems from Slides}
+\qs{}{A digit bit '1' can be represented by a rectangular pulse of width 1 second and the digit bit '0' can be represented by with no signal of pulse width 1 second,. Compute everage energy per bit $E_b$.}
+
+\sol{\\Given,\\
+	Pulse width $T = 1$ second\\
+	Amplitude of pulse $A = 1$ V\\
+	Energy per bit $E_b = \int_0^T |s(t)|^2 dt$\\
+	where $s(t)$ is the signal representing bit '1'\\
+	Therefore, $E_b = \int_0^1 1^2 dt = 1$ J
+}
+
+\qs{}{Energy of signal $m(t) = 100\text{sinc}(200\pi t)$?}
+
+\sol{\\Given,\\
+	$m(t) = 100\text{sinc}(200\pi t)$\\
+	We know that, $E = \int_{-\infty}^{\infty} |m(t)|^2 dt$\\
+	Therefore, $E = \int_{-\infty}^{\infty} 10000\sin^2(200\pi t) dt$\\
+	$= 10000 \int_{-\infty}^{\infty} \sin^2(200\pi t) dt$\\
+	$= 10000 \times \infty$ (since $\int_{-\infty}^{\infty} \sin^2(at) dt$ diverges)\\
+	Hence, the energy of the signal is infinite.
+}
+
+\qs{}{Find the bandwidth of the signal $m(t) = 100\text{sinc}(200\pi t)$}
+
+\sol{ \\
+	We know that the fourier transform of sinc is $\Pi$ rect function. \\
+	Therefore, the fourier transform of $m(t)$ is given by,\\
+	$M(f) = \Pi \left(\frac{f}{200}\right)$
+	As such, the bandwidth of the signal is $100$ Hz.
+}
+
+\qs{}{Find the spectral density of the signal $m(t) = A\cos(2\pi f_c t+ \theta)$}
+
+\sol{\\
+	Spectral density is given by $\psi(f) = |M(f)|^2$\\
+	We know that the fourier transform of $m(t)$ is given by,\\
+	$M(f) = \frac{A}{2}[\delta(f - f_c) + \delta(f + f_c)]$\\
+	Therefore, the spectral density is given by,\\
+	$\psi(f) = \left|\frac{A}{2}[\delta(f - f_c) + \delta(f + f_c)]\right|^2$\\
+	$= \frac{A^2}{4}[\delta(f - f_c) + \delta(f + f_c)]^2$
+}
+
+\qs{Textbook Question}{Show that the autocorrelation function of $g(t) = C \cos(2\pi f_0 t + \theta_0)$ is given by $\RR_g(\tau) = \frac{C^2}{2} \cos(2\pi f_0 \tau)$, and the corresponding PSD is given by $\psi_g(f) = \frac{C^2}{4}[\delta(f - f_0) + \delta(f + f_0)]$ Hence, show that for a signal $y(t)$ given by:
+	\begin{align*}
+		y(t) = C_0 + \sum_{n=1}^{\infty} C_n \cos(2\pi f_n t + \theta_n)
+	\end{align*}
+	the autocorrelation function is given by:
+	\begin{align*}
+		\RR_y(\tau) = C_0^2 + \frac{1}{2} \sum_{n=1}^{\infty} C_n^2 \cos(2\pi f_0 \tau) \\
+		\psi_y(f) = C_0^2 \delta(f) + \frac{1}{4} \sum_{n=1}^{\infty} C_n^2 [\delta(f - f_n) + \delta(f + f_n)]
+	\end{align*}
+}
+
+\sol{\\
+	We know that the autocorrelation function is given by,\\
+	$\RR_g(\tau) = E[g(t)g(t+\tau)]$\\
+	$= E[C \cos(2\pi f_0 t + \theta_0) C \cos(2\pi f_0 (t+\tau) + \theta_0)]$\\
+	$= C^2 E[\cos(2\pi f_0 t + \theta_0) \cos(2\pi f_0 t + 2\pi f_0 \tau + \theta_0)]$\\
+	Using the trigonometric identity, $\cos A \cos B = \frac{1}{2}[\cos(A-B) + \cos(A+B)]$, we get,\\
+	$\RR_g(\tau) = C^2 E\left[\frac{1}{2}[\cos(-2\pi f_0 \tau) + \cos(4\pi f_0 t + 2\theta_0 + 2\pi f_0 \tau)]\right]$\\
+	$= \frac{C^2}{2} [\cos(2\pi f_0 \tau) + E[\cos(4\pi f_0 t + 2\theta_0 + 2\pi f_0 \tau)]]$\\
+	Since $\theta_0$ is uniformly distributed over $[0, 2\pi]$, $E[\cos(4\pi f_0 t + 2\theta_0 + 2\pi f_0 \tau)] = 0$. Therefore,\\
+	$\RR_g(\tau) = \frac{C^2}{2} \cos(2\pi f_0 \tau)$\\
+	
+	Now, the PSD is given by the fourier transform of the autocorrelation function. Therefore,\\
+	$\psi_g(f) = \int_{-\infty}^{\infty} \RR_g(\tau) e^{-j2\pi f \tau} d\tau$\\
+	$= \int_{-\infty}^{\infty} \frac{C^2}{2} \cos(2\pi f_0 \tau) e^{-j2\pi f \tau} d\tau$\\
+	Using the identity, $\cos x = \frac{e^{jx} + e^{-jx}}{2}$, we get,\\
+	$\psi_g(f) = \frac{C^2}{4} \int_{-\infty}^{\infty} [e^{j2\pi f_0 \tau} + e^{-j2\pi f_0 \tau}] e^{-j2\pi f \tau} d\tau$\\
+	$= \frac{C^2}{4} \left[\int_{-\infty}^{\infty} e^{-j2\pi (f - f_0) \tau} d\tau + \int_{-\infty}^{\infty} e^{-j2\pi (f + f_0) \tau} d\tau\right]$\\
+	Using the property of delta function, $\int_{-\infty}^{\infty} e^{-j2\pi a t} dt = \delta(a)$, we get,\\
+	$\psi_g(f) = \frac{C^2}{4} [\delta(f - f_0) + \delta(f + f_0)]$\\	
+	Now, for the signal $y(t)$, the autocorrelation function is given by,\\
+	$\RR_y(\tau) = E[y(t)y(t+\tau)]$\\
+	$= E\left[\left(C_0 + \sum_{n=1}^{\infty} C_n \cos(2\pi f_n t + \theta_n)\right)\left(C_0 + \sum_{n=1}^{\infty} C_n \cos(2\pi f_n (t+\tau) + \theta_n)\right)\right]$\\
+	$= E\left[C_0^2 + C_0 \sum_{n=1}^{\infty} C_n \cos(2\pi f_n (t+\tau) + \theta_n) + C_0 \sum_{n=1}^{\infty} C_n \cos(2\pi f_n t + \theta_n) + \sum_{n=1}^{\infty} C_n^2 \cos(2\pi f_n t + \theta_n) \cos(2\pi f_n (t+\tau) + \theta_n)\right]$\\
+	Since $\theta_n$ are uniformly distributed over $[0, 2\pi]$, $E[\cos(2\pi f_n t + \theta_n)] = 0$. Therefore,\\
+	$\RR_y(\tau) = C_0^2 + \sum_{n=1}^{\infty} C_n^2 E[\cos(2\pi f_n t + \theta_n) \cos(2\pi f_n (t+\tau) + \theta_n)]$\\
+	Using the result from the first part, we get,\\
+	$\RR_y(\tau) = C_0^2 + \frac{1}{2} \sum_{n=1}^{\infty} C_n^2 \cos(2\pi f_n \tau)$\\
+s
+\end{document}
