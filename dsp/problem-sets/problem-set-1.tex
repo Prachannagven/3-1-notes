@@ -1,0 +1,124 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{subcaption}
+
+\title{ECE 434: DSP \\ Problem Set 1}
+\author{Pranav Chandra N. V}
+\begin{document}
+	\maketitle
+
+	\begin{enumerate}
+		\item Determine the mod-4 and mod-4 reductions of the length 8 signal vector:
+			\begin{equation}
+				x = [1, 2, -2, 3, 4, -2, -1, 1]^T
+			\end{equation}
+			\textbf{Solution:}	\\
+			Mod-N reduction involves partitioning the vector into sequeces of length N and then summing the sequences element-wise. \\
+			Thus, mod-4 reduction of x is given by:
+			\begin{equation}
+				x_{mod4} = [1+4, 2-2, -2-1, 3+1]^T = [5, 0, -3, 4]^T
+			\end{equation}
+			Similarly, mod-3 reduction of x is given by:
+			\begin{equation}
+				x_{mod2} = [1+3-1, 2+4+1, -2-2]^T = [3, 7, -4]^T
+			\end{equation}
+			Note that for the mod-3, the third sequence has only 2 elements, so we assume the third element is a 0 (pad zeroes where required).
+
+		\item Let $x = [1, 2, 2, 1, 2, 1, 1, 2]$, compute the 4-point DFT using the matrix form definition
+			
+		\textbf{Solution:} \\
+	\begin{equation}
+		\left[
+			\begin{matrix}
+				1 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+				1 & -j&-1&j&1 &-j &-1&  j \\
+				1 & -1& 1 &-1&1 & -1& 1 & -1\\
+				1 & j & -1& -j&1 & j & -1& -j
+			\end{matrix}
+		\right]
+		\times
+		\left[
+			\begin{matrix}
+			1 \\
+			2 \\
+			2 \\
+			1 \\
+			2 \\
+			1 \\
+			1 \\
+			2 \\
+			\end{matrix}
+		\right]
+		=
+			\left[
+		\begin{matrix}
+			12 \\
+		0 \\
+		0 \\
+		0
+		\end{matrix}
+		\right]
+	\end{equation}
+	Now, compute the mod-4 reduction of x and then compute the 4-point DFT of the reduced signal. Compare the results with the previous DFT.
+	
+	\textbf{Solution:} \\
+	Mod-4 reduction of x is given by:
+	\begin{equation}
+		x = [3 , 3, 3, 3]
+	\end{equation}
+	Now, computing the 4-point DFT of the reduced signal:
+\begin{equation}
+		\left[
+	\begin{matrix}
+		1 & 1 & 1 & 1 \\
+		1 & -j & -1 & j \\
+		1 & -1 & 1 & -1 \\
+		1 & j & -1 & -j 
+	\end{matrix}
+	\right]
+	\times
+		\left[
+	\begin{matrix}
+		3 \\
+		3 \\
+		3 \\
+		3 
+	\end{matrix}
+	\right]
+	 = 
+	 	\left[
+	 \begin{matrix}
+		 12 \\ 
+		 0 \\
+		 0 \\
+		 0
+	 \end{matrix}
+	 \right]
+\end{equation}
+	
+This question basically shows that to compute reduced points DFT, taking the mod-N version of the main sequence provides you with a more efficient way of computing the DFT.
+
+	\item Comute the 8 point FFT of a length 8 signal which are8 samples of the signal:
+		\begin{equation}
+			x[n] = 4\cos\left(\frac{xn}{2}\right) + \cos(\pi n)
+		\end{equation}
+		Discuss if the FFT accurately represents the entire sepctrum of $n]$.
+
+		\textbf{Solution:} \\
+		The 8 points sequence to be taken is given by:
+		\begin{equation}
+			x = [ 0, 0, 16, 0, 8, 0, 16, 0]
+		\end{equation}
+		Now, computing the 8-point DFT of the signal:
+		
+	\end{enumerate}
+	
+\end{document}
