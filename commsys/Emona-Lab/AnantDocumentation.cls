@@ -10,8 +10,8 @@
 \RequirePackage{blindtext}
 \RequirePackage{caption}
 \RequirePackage{tabularx}
-\RequirePackage{booktabs}
-\RequirePackage{subcaption}
+\usepackage{booktabs}
+	\RequirePackage{subcaption}
 \RequirePackage{enumitem}
 \RequirePackage{minted}
 \RequirePackage{etoolbox}
@@ -43,8 +43,6 @@
 	angle=0,
 	contents={\includegraphics{C:/Users/prana/AppData/Roaming/MiKTeX/tex/latex/local/Anant_Logo.png}}
 }
-\RequirePackage{lstlistings} % Code listings
-\RequirePackage{xcolor} % Colour support for code listings
 %\RequirePackage[backend=biber,style=numeric]{biblatex}
 
 %~~~~~~~~Multi-column setup
