@@ -1,0 +1,191 @@
+\documentclass[12pt]{AnantDocumentatioe}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+
+\title{Amplitude and Angle Modulation Formulae}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Basic Signal Definitions}
+
+\begin{itemize}
+    \item Message Signal: $m(t)$
+    \item Carrier Signal: $c(t) = A \cos(2\pi f_c t)$
+\end{itemize}
+
+Modulation is the process of varying a characteristic of the carrier (amplitude, frequency, or phase) according to $m(t)$. For Amplitude Modulation, the carrier amplitude $A$ varies proportionally to $m(t)$.
+
+\section{Amplitude Modulation (AM) Formulae}
+
+\subsection{Basic AM (Conventional AM)}
+
+\begin{itemize}
+    \item Modulated Signal:
+    \[
+        x(t) = (A + m(t)) \cos(2\pi f_c t)
+    \]
+    \item Frequency Spectrum:
+    \[
+        X(f) = \frac{A}{2}[\delta(f+f_c) + \delta(f-f_c)] + \frac{1}{2}[M(f+f_c) + M(f-f_c)]
+    \]
+    \item Carrier Power:
+    \[
+        P_c = \frac{A^2}{2}
+    \]
+    \item Sideband Power:
+    \[
+        P_s = \frac{1}{2} P_m
+    \]
+    \item Total Power:
+    \[
+        P_{AM} = P_c + P_s = \frac{A^2}{2} + \frac{P_m}{2}
+    \]
+    \item Power Efficiency:
+    \[
+        \eta = \frac{P_s}{P_s + P_c} \times 100\% = \frac{P_m}{A^2 + P_m} \times 100\%
+    \]
+    \item Modulation Index ($\mu$):
+    \[
+        \mu = \frac{m_p}{A}, \quad \mu = \frac{x_{\max}-x_{\min}}{x_{\max}+x_{\min}} \quad \text{(from envelope)}
+    \]
+    \item Bandwidth:
+    \[
+        BW = 2B
+    \]
+\end{itemize}
+
+\subsection{Double Sideband-Suppressed Carrier (DSB-SC)}
+
+\begin{itemize}
+    \item Modulated Signal:
+    \[
+        x(t) = m(t) \cos(2\pi f_c t)
+    \]
+    \item Auto-Correlation Function:
+    \[
+        R_x(\tau) = \frac{1}{2} R_m(\tau) \cos(2\pi f_c \tau)
+    \]
+    \item Power Spectral Density:
+    \[
+        S_x(f) = \frac{1}{4}[S_m(f-f_c) + S_m(f+f_c)]
+    \]
+    \item Average Power:
+    \[
+        P_{DSB-SC} = \frac{1}{2} P_m
+    \]
+    \item Bandwidth:
+    \[
+        BW = 2B
+    \]
+\end{itemize}
+
+\subsection{Single Sideband (SSB)}
+
+\begin{itemize}
+    \item Hilbert Transform:
+    \[
+        X_h(f) = -j \text{sgn}(f) X(f)
+    \]
+    \item Upper SSB (USSB) Signal:
+    \[
+        x_{USSB}(t) = m(t) \cos(2\pi f_c t) - m_h(t) \sin(2\pi f_c t)
+    \]
+    \item Lower SSB (LSSB) Signal:
+    \[
+        x_{LSSB}(t) = m(t) \cos(2\pi f_c t) + m_h(t) \sin(2\pi f_c t)
+    \]
+    \item Average Power:
+    \[
+        P_{SSB} = \frac{P_m}{2} + \frac{P_{m_h}}{2} = P_m
+    \]
+    \item Bandwidth:
+    \[
+        BW = B
+    \]
+\end{itemize}
+
+\section{Angle Modulation}
+
+\subsection{General Angle Modulation}
+
+\[
+x(t) = A \cos(2\pi f_c t + \phi(t))
+\]
+
+\begin{itemize}
+    \item Instantaneous Frequency:
+    \[
+        f_i(t) = f_c + \frac{1}{2\pi} \frac{d\phi(t)}{dt}
+    \]
+    \item Instantaneous Frequency Deviation:
+    \[
+        \Delta f(t) = f_i(t) - f_c = \frac{1}{2\pi} \frac{d\phi(t)}{dt}
+    \]
+    \item Average Transmitted Power:
+    \[
+        P = \frac{A^2}{2}
+    \]
+\end{itemize}
+
+\subsection{Frequency Modulation (FM)}
+
+\begin{itemize}
+    \item Instantaneous Frequency:
+    \[
+        f_i(t) = f_c + k_f m(t)
+    \]
+    \item Phase:
+    \[
+        \phi(t) = 2\pi k_f \int_{-\infty}^{t} m(\tau) d\tau
+    \]
+    \item FM Signal:
+    \[
+        x_{FM}(t) = A \cos \Big( 2\pi f_c t + 2\pi k_f \int_{-\infty}^{t} m(\tau) d\tau \Big)
+    \]
+    \item Maximum Frequency Deviation:
+    \[
+        \Delta f = k_f m_p
+    \]
+    \item Narrowband FM Approximation:
+    \[
+        x_{NBFM}(t) \approx A \big[\cos \omega_c t - k_f (\int_{-\infty}^{t} m(\tau) d\tau) \sin \omega_c t \big]
+    \]
+    \item Modulation Index:
+    \[
+        \beta = \frac{\Delta f}{f_m}
+    \]
+    \item Carson's Rule:
+    \[
+        B_{FM} = 2(\Delta f + B) = 2(\beta + 1) f_m
+    \]
+\end{itemize}
+
+\subsection{Phase Modulation (PM)}
+
+\begin{itemize}
+    \item Phase:
+    \[
+        \phi(t) = k_p m(t)
+    \]
+    \item PM Signal:
+    \[
+        x_{PM}(t) = A \cos(2\pi f_c t + k_p m(t))
+    \]
+    \item Maximum Phase Deviation:
+    \[
+        \Delta \phi = k_p m_p
+    \]
+    \item Narrowband PM Approximation:
+    \[
+        x_{NBPM}(t) \approx A \big[ \cos \omega_c t - k_p m(t) \sin \omega_c t \big]
+    \]
+\end{itemize}
+
+\end{document}
+

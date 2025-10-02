@@ -33,7 +33,6 @@
 			Note that for the mod-3, the third sequence has only 2 elements, so we assume the third element is a 0 (pad zeroes where required).
 
 		\item Let $x = [1, 2, 2, 1, 2, 1, 1, 2]$, compute the 4-point DFT using the matrix form definition
-			
 		\textbf{Solution:} \\
 	\begin{equation}
 		\left[
@@ -119,6 +118,82 @@ This question basically shows that to compute reduced points DFT, taking the mod
 		\end{equation}
 		Now, computing the 8-point DFT of the signal:
 		
+	\item Find the DTFT of $y_1[n] = \begin{cases} 1 \hspace{5mm} \text{if } -N \leq n \leq N \\ 0 \hspace{5mm} \text{otherwise} \end{cases}$.
+
+		\textbf{Solution:} \\
+	The DTFT of a signal is given by:
+
+
+	\begin{equation}
+		Y_1(e^{j\omega}) = \sum_{n=-\infty}^{\infty} y_1[n] e^{-j\omega n}
+	\end{equation}
+
+	\item Let $X(k)$ be a 14-oitn DFT of a length 14 real sequence $x(n)$. The first 8 sampels of X(k) are given by:
+		\begin{align}
+			X(0) = 12 \\
+			X(1) = -1 + j3 \\
+			X(2) = 3 + j4 \\
+			X(3) = 1 - j5 \\
+			X(4) = -2 + j2 \\
+			X(5) = 6 + j3 \\
+			X(6) = -2 - j3 \\
+			X(7) = 10
+		\end{align}
+		\begin{enumerate}
+			\item Find the remaining 6 values of X(k). \\
+				\textbf{Solution:} \\
+				Using the property of DFT for real sequences, we know that:
+				\begin{equation}
+					X(N-k) = X^*(k)
+				\end{equation}
+				where N is the length of the sequence. \\
+				Thus, we can compute the remaining values as follows:
+				\begin{align}
+					X(8) = X^*(6) = -2 + j3 \\
+					X(9) = X^*(5) = 6 - j3 \\
+					X(10) = X^*(4) = -2 - j2 \\
+					X(11) = X^*(3) = 1 + j5 \\
+					X(12) = X^*(2) = 3 - j4 \\
+					X(13) = X^*(1) = -1 - j3
+				\end{align}
+			\item Find $x(0)$ without computing the IDFT of X(k). \\
+				\textbf{Solution:} \\
+				Using the property of DFT, we know that:
+				\begin{equation}
+					x(0) = \frac{1}{N} \sum_{k=0}^{N-1} X(k)
+				\end{equation}
+				where N is the length of the sequence. \\
+				Thus, we can compute $x(0)$ as follows:
+			\item Find $x(7)$ without computing the IDFT of X(k). \\
+				\textbf{Solution:} \\
+				Using the property of DFT, we know that:
+				\begin{equation}
+					x(n) = \frac{1}{N} \sum_{k=0}^{N-1} X(k) e^{j\frac{2\pi}{N}kn}
+				\end{equation}
+				where N is the length of the sequence. \\
+				Thus, we can compute $x(7)$ as follows:
+		\end{enumerate}
+		
+	\item A length 8 sequence $x(n) = \{-4, 5, 2, -3, 0, -2, 3, 4\}$ has an 8-point DFT $X(k)$. A new sequence is defined as:
+		\begin{equation}
+			Y(k) = W_4^{3k} X(k)
+		\end{equation}
+		Find y(n) without computing the IDFT of Y(k). \\
+		\textbf{Solution:} \\	
+		We know that for a DFT, multiplying by a twiddle factor corresponds to a circular shift in the time domain. \\
+		Thus, we can compute y(n) as follows:
+		\begin{equation}
+			y(n) = x((n-3) \mod 8)
+		\end{equation}
+		This process exists because multiplying by $W_N^{kn_0}$ in the frequency domain corresponds to a circular shift by $n_0$ in the time domain. However, when $N$ is different from the length of the sequence, the circular shift is scaled accordingly. In this case, since we are multiplying by $W_4^{3k}$ instead of $W_8^{3k}$, the effective shift in the time domain is scaled by a factor of 2 (since 8/4 = 2). Therefore, the circular shift is by 3*2 = 6 positions.
+
+	\item Let $X(z) = Z\{x(n\}$, where $x(n) = 0.4^nu(n)$:
+		\begin{enumerate}
+			\item Find $g(n) = Z^{-1}\{X(z^2)\}$ without computing $X(z)$.
+			\item Find $g(n) = Z^{-1}\{(1 + Z^{-1})X(z^2)\}$ without computing $X(z)$.
+		\end{enumerate}
+	\item Let $X(z) = Z\{x(n)\}$, $x(n)$ is a 12 length sequence, and $X_0(k)$ is the 9 point DFT of $x(n)$. Find the inverse DFT of $X_0(k)$ in terms of $x(n)$ without computing $X_0(k)$.
+	\item Let $X(e^{j\omega}) = F.T.\{1, 1, ..., 1\}$ from 0 to 7. $X_1(k)$ is obtained by sampling $X(e^{j\omega})$ at uniform intervals of $\frac{\pi}{5}$. 
 	\end{enumerate}
-	
+
 \end{document}

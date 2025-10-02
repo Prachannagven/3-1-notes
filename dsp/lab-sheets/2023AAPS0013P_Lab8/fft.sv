@@ -8,7 +8,7 @@ module fft_8_pt(
     output reg done
 );
    //Temporary Variables for butterfly stages
-   real inputs     [7:0];
+   signed real inputs     [7:0];
    real butter_s1  [7:0];
    real butter_s2_r[7:0];
    real butter_s2_i[7:0];
