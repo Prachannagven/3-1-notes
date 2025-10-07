@@ -1,0 +1,125 @@
+\documentclass{AnantDocumentation}
+
+\backgroundsetup{
+	contents=""
+}
+
+\begin{document}
+\section{Z-Transform Properties}
+\[
+\begin{array}{|c|c|c|}
+\hline
+\textbf{Property} & \textbf{Time-Domain Relation} & \textbf{Z-Domain Relation} \\
+\hline
+\text{Linearity} & a x_1[n] + b x_2[n] & a X_1(z) + b X_2(z) \\
+\hline
+\text{Time Shifting} & x[n - n_0] & z^{-n_0} X(z) \\
+\hline
+\text{Advance (negative shift)} & x[n + n_0] & z^{n_0} X(z) \\
+\hline
+\text{Scaling in amplitude} & a x[n] & a X(z) \\
+\hline
+\text{Multiplication by } n & n x[n] & -z \frac{dX(z)}{dz} \\
+\hline
+\text{Convolution in time} & x_1[n] * x_2[n] & X_1(z) X_2(z) \\
+\hline
+\text{Correlation} & \sum_n x[n] y^*[n-k] & X(z) Y^*\left(\frac{1}{z^*}\right) \\
+\hline
+\text{Time Reversal} & x[-n] & X\left(\frac{1}{z}\right) \\
+\hline
+\text{Exponential Scaling} & a^n x[n] & X\left(\frac{z}{a}\right) \\
+\hline
+\text{Differentiation in } z & n x[n] & -z \frac{dX(z)}{dz} \\
+\hline
+\text{Initial Value Theorem} & x[0] & \lim_{z \to \infty} X(z) \\
+\hline
+\text{Final Value Theorem} & \lim_{n \to \infty} x[n] & \lim_{z \to 1} (1 - z^{-1}) X(z), \text{ if stable} \\
+\hline
+\text{Conjugation} & x^*[n] & X^*\left(\frac{1}{z^*}\right) \\
+\hline
+\text{Parseval’s Relation} & \sum_n x[n] y^*[n] & \frac{1}{2\pi j} \oint X(z) Y^*\left(\frac{1}{z^*}\right) \frac{dz}{z} \\
+\hline
+\text{Decimation (by M)} & x[Mn] & \frac{1}{M} \sum_{k=0}^{M-1} X\left(z^{1/M} W_M^{-k}\right) \\
+\hline
+\text{Upsampling (by M)} & 
+\begin{cases}
+x[n/M], & n = mM \\
+0, & \text{otherwise}
+\end{cases}
+& X(z^M) \\
+\hline
+\text{Right-Sided Sequence} & x[n] = 0, n < 0 & \text{ROC: } |z| > \text{outermost pole} \\
+\hline
+\text{Left-Sided Sequence} & x[n] = 0, n > 0 & \text{ROC: } |z| < \text{innermost pole} \\
+\hline
+\text{Two-Sided Sequence} & \text{both sides nonzero} & \text{ROC: } r_1 < |z| < r_2 \\
+\hline
+\end{array}
+\]
+
+\section{DTFT}
+\[
+\begin{array}{|c|c|c|}
+\hline
+\textbf{Property} & \textbf{Time Domain} & \textbf{Frequency Domain (DTFT)} \\
+\hline
+\text{Linearity} & a x_1[n] + b x_2[n] & a X_1(e^{j\omega}) + b X_2(e^{j\omega}) \\
+\hline
+\text{Time Shift} & x[n - n_0] & e^{-j\omega n_0} X(e^{j\omega}) \\
+\hline
+\text{Amplitude Scaling} & a x[n] & a X(e^{j\omega}) \\
+\hline
+\text{Time Reversal} & x[-n] & X(e^{-j\omega}) \\
+\hline
+\text{Frequency Shift} & e^{j\omega_0 n} x[n] & X(e^{j(\omega - \omega_0)}) \\
+\hline
+\text{Convolution (Time)} & x_1[n] * x_2[n] & X_1(e^{j\omega}) X_2(e^{j\omega}) \\
+\hline
+\text{Multiplication (Time)} & x_1[n] x_2[n] & \frac{1}{2\pi}\int_{-\pi}^{\pi} X_1(e^{j\theta}) X_2(e^{j(\omega - \theta)}) d\theta \\
+\hline
+\text{Conjugation} & x^*[n] & X^*(e^{-j\omega}) \\
+\hline
+\text{Parseval’s Relation} & \sum_n |x[n]|^2 & \frac{1}{2\pi}\int_{-\pi}^{\pi} |X(e^{j\omega})|^2 d\omega \\
+\hline
+\text{Differentiation in Frequency} & n x[n] & j \frac{d}{d\omega} X(e^{j\omega}) \\
+\hline
+\text{Periodic Extension} & x[n] \text{ periodic with period } N & X(e^{j\omega}) = 2\pi \sum_k c_k \delta(\omega - 2\pi k / N) \\
+\hline
+\text{Real Sequence} & x[n] \text{ real} & X(e^{j\omega}) = X^*(e^{-j\omega}) \ (\text{conjugate symmetry}) \\
+\hline
+\end{array}
+\]
+
+\section{DFT}
+\[
+\begin{array}{|c|c|c|}
+\hline
+\textbf{Property} & \textbf{Time Domain} & \textbf{Frequency Domain (DFT)} \\
+\hline
+\text{Linearity} & a x_1[n] + b x_2[n] & a X_1[k] + b X_2[k] \\
+\hline
+\text{Circular Time Shift} & x[(n - n_0)_N] & W_N^{kn_0} X[k] \\
+\hline
+\text{Circular Frequency Shift} & W_N^{-k_0 n} x[n] & X[(k - k_0)_N] \\
+\hline
+\text{Circular Convolution} & x_1[n] \circledast x_2[n] & X_1[k] X_2[k] \\
+\hline
+\text{Pointwise Multiplication} & x_1[n] x_2[n] & \frac{1}{N} X_1[k] \circledast X_2[k] \\
+\hline
+\text{Conjugation} & x^*[n] & X^*[(-k)_N] \\
+\hline
+\text{Time Reversal} & x[(-n)_N] & X^*[(-k)_N] \\
+\hline
+\text{Parseval’s Theorem} & \sum_{n=0}^{N-1} |x[n]|^2 & \frac{1}{N} \sum_{k=0}^{N-1} |X[k]|^2 \\
+\hline
+\text{Real Sequence} & x[n]\text{ real} & X[k] = X^*[(-k)_N] \ (\text{conjugate symmetry}) \\
+\hline
+\text{Even/Odd Symmetry} & x[n]\text{ even/odd} & X[k]\text{ real/imaginary} \\
+\hline
+\text{Time Differentiation} & n x[n] & j\frac{N}{2\pi}\frac{d X[k]}{dk} \text{ (approximate)} \\
+\hline
+\end{array}
+\]
+
+\end{document}
+
