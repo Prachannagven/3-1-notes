@@ -1,0 +1,1363 @@
+\documentclass[12pt,a4paper]{AnantDocumentation}
+
+\geometry{margin=1in}
+\backgroundsetup{
+	scale=1,
+	color=black,
+	opacity=0.275,
+	angle=0,
+	contents={\includegraphics{/home/pranav/Documents/3-1-notes/dip/background.png}}
+}
+
+\title{\textbf{Digital Image Processing -- Comprehensive Notes (Condensed Master Version)}}
+\author{Based on Gonzalez and Woods, 4th Edition}
+\date{}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\newpage
+
+%---------------------------------------------------------------
+\section{Introduction to Digital Image Processing}
+
+\subsection{What is Digital Image Processing?}
+A digital image is a two-dimensional function $f(x, y)$, where $x$ and $y$ denote spatial coordinates, and the amplitude of $f$ at any point, denoted $f(x, y)$, represents the intensity or gray level at that point. When both spatial coordinates and amplitude values are discrete and finite, the image is called a \textbf{digital image}. Digital images are processed using digital computers or specialized digital hardware.
+
+\textbf{Digital image processing (DIP)} is the discipline that focuses on developing algorithms and systems for acquiring, enhancing, restoring, compressing, analyzing, and interpreting digital images. Gonzalez and Woods define it as the use of computer algorithms to perform image processing on digital images. The goal is to improve image quality for human interpretation or for autonomous machine analysis.
+
+A digital image is composed of elements called \textbf{pixels} (short for picture elements). Each pixel corresponds to a discrete sample of the spatial coordinates and intensity of the image. Hence, an image can be modeled as a 2D matrix of pixels of dimension $M \times N$.
+
+\paragraph{Mathematical Representation:} A digital image $f[m, n]$ is obtained from a continuous image $f(x, y)$ by:
+\begin{equation}
+f[m, n] = f(x, y) \big|_{x = m \Delta x, y = n \Delta y}
+\end{equation}
+where $\Delta x$ and $\Delta y$ are the sampling intervals in the $x$ and $y$ directions.
+
+\textbf{Levels of processing} (as per Gonzalez and Woods, Chapter 1):
+\begin{itemize}
+\item \textbf{Low-level processing:} Operations where both input and output are images, e.g., noise removal, sharpening, or contrast enhancement.
+\item \textbf{Mid-level processing:} Tasks such as image segmentation, feature extraction, and object boundary detection.
+\item \textbf{High-level processing:} Involves making sense of the image data — object recognition, scene understanding, or automated decision-making.
+\end{itemize}
+
+\subsection{Origins of Digital Image Processing}
+The roots of digital image processing lie in both early image transmission and the evolution of digital computing. The Bartlane cable transmission system (1920s) was one of the first to transmit digital images across the Atlantic. Each image was coded into text and transmitted over telegraph lines, with reconstructions made from punched tape.
+
+\paragraph{Chronology of key developments (as outlined by Gonzalez):}
+\begin{itemize}
+\item \textbf{1920s – Bartlane System:} First digital coding of images for transmission.
+\item \textbf{1960s – Space Program:} NASA’s Jet Propulsion Laboratory (JPL) processed images from Ranger 7 (1964), which were transmitted from the Moon’s surface, marking the birth of digital image processing as a formal field.
+\item \textbf{1970s – Medical Imaging:} Introduction of CT (computed tomography) scanning revolutionized diagnostic imaging.
+\item \textbf{1980s–2000s – Expansion:} Advances in microprocessors and CCD sensors led to digital photography, satellite imaging, and industrial automation.
+\item \textbf{Present day:} Widespread integration of DIP in AI, robotics, autonomous vehicles, facial recognition, and biomedical engineering.
+\end{itemize}
+
+\paragraph{Motivating factors for DIP’s rise:}
+\begin{itemize}
+\item Flexibility of digital systems compared to analog methods.
+\item The ability to store, transmit, and reproduce images efficiently.
+\item Rapid evolution of computational hardware.
+\item The development of mathematical models for image analysis (Fourier theory, statistics, linear systems).
+\end{itemize}
+
+\subsection{Examples of Fields that Use Digital Image Processing}
+Digital image processing has applications in numerous scientific, industrial, and artistic domains. Gonzalez identifies the following representative areas:
+
+\begin{itemize}
+\item \textbf{Medicine:} Enhancing diagnostic images (X-rays, MRI, CT, PET, ultrasound) to improve visual interpretation and aid in quantitative analysis.
+\item \textbf{Remote Sensing:} Analysis of satellite imagery for environmental monitoring, land-use classification, and resource management.
+\item \textbf{Astronomy:} Processing deep-space telescope data (e.g., Hubble images) for noise removal and feature extraction.
+\item \textbf{Industrial Inspection:} Machine vision systems for defect detection and quality assurance in manufacturing.
+\item \textbf{Security and Surveillance:} Facial recognition, biometrics (fingerprint, iris scanning), and object tracking.
+\item \textbf{Archaeology and Forensics:} Enhancing degraded manuscripts or forensic images for analysis.
+\item \textbf{Entertainment and Art:} Image enhancement, restoration, and special effects in film and photography.
+\end{itemize}
+
+\subsection{Fundamental Steps in Digital Image Processing}
+According to Gonzalez and Woods, the major steps in a general image processing system are:
+\begin{enumerate}
+\item \textbf{Image Acquisition:} Capturing the image using sensors (CCD, CMOS, scanners). Often includes initial digitization (sampling + quantization).
+\item \textbf{Preprocessing:} Image enhancement and noise suppression to prepare the image for analysis.
+\item \textbf{Segmentation:} Partitioning the image into meaningful regions (e.g., separating foreground from background).
+\item \textbf{Representation and Description:} Converting segmented regions into mathematical or statistical features for interpretation.
+\item \textbf{Recognition and Interpretation:} Identifying objects and assigning meaning to detected patterns.
+\item \textbf{Knowledge Base:} Provides contextual information that influences the decision-making process; typically stores prior models or reference data.
+\end{enumerate}
+
+\paragraph{Conceptual flow:}
+\begin{center}
+Image Acquisition $\rightarrow$ Preprocessing $\rightarrow$ Segmentation $\rightarrow$ Feature Extraction $\rightarrow$ Recognition
+\end{center}
+
+\subsection{Components of an Image Processing System}
+A complete digital image processing system consists of the following major components (Fig. 1.6 in Gonzalez):
+
+\begin{itemize}
+\item \textbf{Image Sensors:} Capture optical or electromagnetic energy (e.g., CCD, CMOS, infrared sensors).
+\item \textbf{Digitizer:} Converts analog sensor output into discrete digital signals through sampling and quantization.
+\item \textbf{Computer Hardware:} CPUs, GPUs, DSPs, and FPGAs perform computational tasks; GPUs are preferred for parallel operations.
+\item \textbf{Software:} Implements image processing algorithms. Common tools include MATLAB, Python (OpenCV, scikit-image), and C++ libraries.
+\item \textbf{Storage:} For image databases, archival, and retrieval systems; often uses compression.
+\item \textbf{Display Devices:} Monitors, printers, and projection systems for visual output.
+\item \textbf{Communication Links:} Transmit images between systems (wired or wireless, using standards such as DICOM for medical data).
+\end{itemize}
+
+\paragraph{Example System (per Gonzalez):} In medical imaging, an X-ray sensor captures data (acquisition), preprocessing removes noise, segmentation isolates organs, feature extraction measures tissue properties, and the final display aids radiologists in diagnosis.
+
+\paragraph{Summary:} The introduction sets the foundation for understanding that digital image processing is both a theoretical and practical discipline rooted in mathematical modeling, computational algorithms, and real-world imaging systems. It bridges physics (light interaction), engineering (sensors, hardware), and computer science (algorithms, AI).
+
+\section{Digital Image Fundamentals}
+
+\subsection{Light and the Electromagnetic Spectrum}
+Light is a form of electromagnetic (EM) radiation, characterized by its wavelength ($\lambda$) or frequency ($f$). The relationship between these quantities is given by $c = f\lambda$, where $c$ is the speed of light in vacuum ($\approx 3 \times 10^8$ m/s). The energy of an individual photon is given by:
+\begin{equation}
+E = hf = \frac{hc}{\lambda}
+\end{equation}
+where $h$ is Planck’s constant ($6.626 \times 10^{-34}$ J·s). Visible light corresponds to wavelengths roughly in the range 400–700 nm, with violet light at the lower end and red at the upper end.
+
+In imaging, light interacts with objects through reflection, absorption, transmission, and scattering. The intensity of light reaching the sensor depends on these interactions, which vary with material properties and illumination geometry. The reflectance and illumination components define the brightness pattern of an image.
+
+\paragraph{Radiometric Quantities:}
+\begin{itemize}
+\item \textbf{Radiance} ($L$): Power emitted or reflected by a surface per unit solid angle per unit projected area.
+\item \textbf{Irradiance} ($E$): Power incident on a surface per unit area.
+\item \textbf{Luminance and Brightness:} The perceptual counterparts of radiance, influenced by the human visual system (HVS).
+\end{itemize}
+
+The HVS perceives brightness logarithmically, following Weber’s law — sensitivity to intensity changes decreases as brightness increases. This property influences gamma correction and tone mapping in DIP.
+
+\subsection{Image Formation Model}
+Following Gonzalez, the image formation process can be modeled as:
+\begin{equation}
+f(x, y) = i(x, y) r(x, y)
+\end{equation}
+where:
+\begin{itemize}
+\item $i(x, y)$ is the \textbf{illumination component} — the amount of incident light.
+\item $r(x, y)$ is the \textbf{reflectance component} — the fraction of light reflected by the object surface.
+\end{itemize}
+
+Typical values of $r(x, y)$ lie between 0 (black) and 1 (white), while $i(x, y)$ varies depending on the lighting conditions. The illumination component generally changes slowly across an image, whereas reflectance changes abruptly at edges — hence, reflectance is primarily responsible for visual detail.
+
+\paragraph{Dynamic Range:} The range of measurable intensity values, given by:
+\begin{equation}
+DR = \frac{I_{max}}{I_{min}}
+\end{equation}
+For human vision, $DR \approx 10^4$, while typical 8-bit imaging devices have $DR = 255:1$. High dynamic range (HDR) imaging seeks to overcome this limitation by capturing and combining exposures of different brightness levels.
+
+\paragraph{Brightness Adaptation and Discrimination:} The human eye adapts to varying illumination via mechanisms that adjust retinal sensitivity. The \textbf{Weber ratio}, $\Delta I / I$, quantifies the smallest detectable intensity change, typically around 0.02 for moderate brightness levels.
+
+\subsection{Image Sensing and Acquisition}
+Image sensing refers to converting incoming energy into a digital representation. The sensing process involves two physical elements: an \textbf{energy source} and a \textbf{sensing device}. Common energy sources include visible light, X-rays, and electromagnetic radiation.
+
+According to Gonzalez, image sensors can be classified as:
+\begin{itemize}
+\item \textbf{Single-sensing elements:} Simple photodiodes that measure irradiance at a single point.
+\item \textbf{Line sensors:} One-dimensional arrays used in scanners and pushbroom sensors.
+\item \textbf{Area sensors:} Two-dimensional CCD or CMOS arrays, as in digital cameras.
+\end{itemize}
+
+The analog signal produced by each sensor element is digitized using an \textbf{analog-to-digital converter (ADC)}. Color imaging employs mosaic filters (e.g., Bayer pattern) to capture RGB channels, which are later demosaiced to form a full-color image.
+
+\subsection{Image Sampling and Quantization}
+To digitize a continuous image $f(x, y)$, we perform:
+\begin{itemize}
+\item \textbf{Sampling:} Discretization of spatial coordinates $(x, y)$ into a grid $(m\Delta x, n\Delta y)$.
+\item \textbf{Quantization:} Discretization of intensity values into $L = 2^b$ levels, where $b$ is the bit depth.
+\end{itemize}
+
+\paragraph{Mathematical Representation:}
+\begin{equation}
+f[m, n] = Q{f(x, y)}|_{x=m\Delta x, y=n\Delta y}
+\end{equation}
+where $Q{\cdot}$ represents the quantization operator.
+
+Reducing spatial resolution (sampling) leads to \textbf{aliasing}, while reducing gray-level resolution (quantization) introduces \textbf{false contouring}.
+
+\paragraph{Aliasing:} When the sampling rate is below the Nyquist frequency, high-frequency components fold into lower frequencies, distorting the image. Antialiasing filters are used to limit high frequencies before sampling.
+
+\paragraph{Spatial Resolution:} The number of pixels per unit area, often measured in dpi (dots per inch). Higher resolution captures finer detail but requires more storage and computation.
+
+\paragraph{Gray-Level Resolution:} The number of discrete intensity values; increasing bit depth enhances visual smoothness and contrast fidelity.
+
+\subsection{Interpolation and Resampling}
+When changing image size or rotating, pixel values must be interpolated at new coordinates. Common methods include:
+\begin{itemize}
+\item \textbf{Nearest Neighbor:} Assigns the intensity of the closest pixel (fast but blocky).
+\item \textbf{Bilinear:} Uses four nearest neighbors for weighted averaging.
+\item \textbf{Bicubic:} Considers 16 neighbors, offering smoother results.
+\end{itemize}
+
+\paragraph{Bilinear Interpolation Formula:}
+If $(x,y)$ lies between $(m,n)$ and $(m+1,n+1)$,
+\begin{equation}
+f(x,y) = (1-a)(1-b)f[m,n] + a(1-b)f[m+1,n] + (1-a)b f[m,n+1] + ab f[m+1,n+1]
+\end{equation}
+where $a = x - m$ and $b = y - n$.
+
+\subsection{Basic Relationships Between Pixels}
+\paragraph{Neighborhoods:}
+\begin{itemize}
+\item 4-neighbors ($N_4$): $(x\pm1, y)$, $(x, y\pm1)$.
+\item Diagonal neighbors ($N_D$): $(x\pm1, y\pm1)$.
+\item 8-neighbors ($N_8$): Combination of $N_4$ and $N_D$.
+\end{itemize}
+
+\paragraph{Adjacency and Connectivity:} Two pixels are adjacent if they share a border or corner and have similar intensity values. Connectivity defines whether pixels belong to the same region:
+\begin{itemize}
+\item 4-connectivity: Connected via $N_4$.
+\item 8-connectivity: Connected via $N_8$.
+\item m-connectivity: Hybrid scheme avoiding ambiguities in connectivity.
+\end{itemize}
+
+\paragraph{Distance Metrics:}
+\begin{itemize}
+\item \textbf{Euclidean Distance:} $D_E = \sqrt{(x_1-x_2)^2 + (y_1-y_2)^2}$.
+\item \textbf{City Block Distance (D4):} $|x_1-x_2| + |y_1-y_2|$.
+\item \textbf{Chessboard Distance (D8):} $\max(|x_1-x_2|, |y_1-y_2|)$.
+\end{itemize}
+
+These distances are crucial in region labeling, morphological processing, and edge detection.
+
+\subsection{Representing Digital Images}
+
+A digital image can be represented mathematically as a two-dimensional discrete function:
+\begin{equation}
+f[m, n] = \text{intensity at spatial coordinates } (m, n)
+\end{equation}
+where $m$ and $n$ denote the spatial sampling indices along the horizontal and vertical directions respectively.
+
+\paragraph{Matrix Representation:}
+A digital image of size $M \times N$ with $L$ possible gray levels can be represented as a matrix:
+\begin{equation}
+\mathbf{F} = 
+\begin{bmatrix}
+f(0,0) & f(0,1) & \dots & f(0,N-1) \\
+f(1,0) & f(1,1) & \dots & f(1,N-1) \\
+\vdots & \vdots & \ddots & \vdots \\
+f(M-1,0) & f(M-1,1) & \dots & f(M-1,N-1)
+\end{bmatrix}
+\end{equation}
+
+Each element $f(i,j)$ corresponds to one pixel value in the image. 
+For color images, each pixel is a \textbf{vector}:
+\begin{equation}
+\vec{f}(x, y) = [R(x, y), G(x, y), B(x, y)]^T
+\end{equation}
+where $R$, $G$, and $B$ represent the red, green, and blue components. 
+Thus, a color image is a 3D array of size $M \times N \times 3$.
+
+\paragraph{Multispectral and Hyperspectral Images:}
+For satellite or remote sensing applications, multiple spectral bands are captured simultaneously:
+\begin{equation}
+f_k(x, y), \quad k = 1, 2, \dots, K
+\end{equation}
+where $K$ represents the number of spectral channels (e.g., visible, infrared). The resulting data form a \textbf{data cube}.
+
+\paragraph{Vector Representation:}
+For computational purposes (e.g., linear algebraic operations), an image may be converted into a one-dimensional vector:
+\begin{equation}
+\mathbf{f} = \text{vec}(F) = [f(0,0), f(0,1), \dots, f(M-1,N-1)]^T
+\end{equation}
+This representation simplifies matrix-based transformations such as principal component analysis (PCA) or image compression.
+
+\paragraph{Bit Representation:}
+If each pixel uses $b$ bits, the total number of intensity levels is:
+\begin{equation}
+L = 2^b
+\end{equation}
+For an image of size $M \times N$, the total storage required is:
+\begin{equation}
+S = M \times N \times b \text{ bits}
+\end{equation}
+
+\paragraph{Example:}
+An $800 \times 600$ 8-bit grayscale image requires:
+\[
+S = 800 \times 600 \times 8 = 3.84 \times 10^6 \text{ bits} \approx 480 \text{ KB}
+\]
+
+\paragraph{Summary:}
+Digital images can be represented in several equivalent forms:
+\begin{itemize}
+\item As a 2D intensity matrix (grayscale).
+\item As a 3D tensor (color or multispectral).
+\item As a 1D vector for mathematical operations.
+\end{itemize}
+These representations are interchangeable and form the computational basis for all image processing operations.
+
+\subsection{Spatial and Gray-Level Resolution}
+
+\paragraph{Definition:}
+\textbf{Spatial resolution} refers to the smallest discernible detail in an image, while \textbf{gray-level resolution} (also known as intensity resolution) refers to the smallest change in intensity detectable in the image.
+
+\subsubsection{Spatial Resolution}
+Spatial resolution is determined by the density of sampling points per unit distance. Higher sampling density allows the image to represent finer details.
+
+\paragraph{Quantitative Definition:}
+If the sampling intervals are $\Delta x$ and $\Delta y$ along the two spatial axes, the resolution is inversely proportional to these values:
+\begin{equation}
+R_s = \frac{1}{\Delta x \, \Delta y}
+\end{equation}
+
+In digital imaging, the number of pixels per unit area (often measured in dots per inch, dpi) defines the spatial resolution. For an image of dimensions $M \times N$ and physical dimensions $X \times Y$,
+\begin{equation}
+\text{Spatial Resolution (pixels/mm)} = \frac{M}{X} \times \frac{N}{Y}
+\end{equation}
+
+\paragraph{Practical Example:}
+A 300 dpi printer can print 300 pixels per inch, corresponding to a spatial sampling interval of approximately 0.085 mm.
+
+\paragraph{Effect of Undersampling (Aliasing):}
+If the sampling rate falls below the Nyquist rate, high-frequency details of the image are misrepresented, producing \textbf{aliasing artifacts} such as Moiré patterns or jagged edges. To avoid aliasing, the sampling rate $f_s$ must satisfy:
+\begin{equation}
+f_s \geq 2f_{max}
+\end{equation}
+where $f_{max}$ is the highest spatial frequency present in the image.
+
+\subsubsection{Gray-Level (Intensity) Resolution}
+Gray-level resolution refers to the number of discrete intensity levels available to represent image brightness. If each pixel is represented by $b$ bits, then:
+\begin{equation}
+L = 2^b
+\end{equation}
+where $L$ is the number of gray levels.
+
+\paragraph{Quantization Step Size:}
+Given a continuous intensity range $[I_{min}, I_{max}]$, the quantization interval $\Delta I$ is:
+\begin{equation}
+\Delta I = \frac{I_{max} - I_{min}}{L - 1}
+\end{equation}
+
+\paragraph{Effect of Low Gray-Level Resolution:}
+If $b$ is too small, gray-level discontinuities appear as \textbf{false contouring} or banding effects, especially in smooth gradient regions such as the sky or skin.
+
+\paragraph{Example:}
+A typical 8-bit image uses $L=256$ levels. Reducing this to 4 bits ($L=16$) produces visible quantization steps.
+
+\paragraph{Combined Resolution:}
+The overall image fidelity depends jointly on spatial and gray-level resolutions. An increase in one cannot fully compensate for degradation in the other.
+
+\paragraph{Summary:}
+\begin{itemize}
+\item High spatial resolution captures fine detail; high gray-level resolution ensures smooth tonal variation.
+\item Aliasing results from inadequate spatial sampling; contouring arises from coarse quantization.
+\item Resolution trade-offs are governed by storage, transmission bandwidth, and human perceptual limits.
+\end{itemize}
+
+\subsection{Arithmetic and Logical Operations on Images}
+
+Arithmetic and logical operations form the foundation for image enhancement, analysis, and restoration.  
+They operate on a pixel-by-pixel basis and can be applied to single images or to combinations of multiple images of the same size.
+
+Let two digital images $f_1(x,y)$ and $f_2(x,y)$ of dimensions $M \times N$ be defined over the same spatial grid.
+
+\subsubsection{Arithmetic Operations}
+
+\paragraph{1. Image Addition}
+The sum of two images is defined as:
+\begin{equation}
+g(x, y) = f_1(x, y) + f_2(x, y)
+\end{equation}
+Addition is used for:
+\begin{itemize}
+\item \textbf{Image Averaging:} Reduces random noise by averaging multiple noisy images of the same scene:
+\begin{equation}
+\bar{f}(x, y) = \frac{1}{K} \sum_{k=1}^{K} f_k(x, y)
+\end{equation}
+If the noise is random and zero-mean, the signal-to-noise ratio (SNR) improves by a factor of $\sqrt{K}$.
+\item \textbf{Brightness Adjustment:} Adding a constant $C$ increases image brightness:
+\begin{equation}
+g(x, y) = f(x, y) + C
+\end{equation}
+\end{itemize}
+
+\paragraph{2. Image Subtraction}
+Defined as:
+\begin{equation}
+g(x, y) = f_1(x, y) - f_2(x, y)
+\end{equation}
+This operation is fundamental for:
+\begin{itemize}
+\item \textbf{Change Detection:} Detects temporal differences between two images (e.g., medical or satellite imaging).
+\item \textbf{Masking and Edge Enhancement:} Subtracting a blurred version of an image from the original enhances edges:
+\begin{equation}
+g(x, y) = f(x, y) - f_{blur}(x, y)
+\end{equation}
+This is the basis for unsharp masking and high-boost filtering.
+\end{itemize}
+
+\paragraph{3. Image Multiplication}
+\begin{equation}
+g(x, y) = f_1(x, y) \cdot f_2(x, y)
+\end{equation}
+Applications include:
+\begin{itemize}
+\item \textbf{Masking:} Retains only selected regions by multiplying an image with a binary mask $M(x,y)$:
+\[
+g(x, y) = f(x, y) \cdot M(x, y)
+\]
+\item \textbf{Illumination Correction:} Multiplying by a gain field compensates for nonuniform illumination.
+\end{itemize}
+
+\paragraph{4. Image Division}
+\begin{equation}
+g(x, y) = \frac{f_1(x, y)}{f_2(x, y) + \epsilon}
+\end{equation}
+(Here $\epsilon$ prevents division by zero.)
+
+Applications:
+\begin{itemize}
+\item \textbf{Flat-Field Correction:} Divides a raw image by a reference image to remove sensor nonuniformities.
+\item \textbf{Normalization:} Scales image intensity to a desired range.
+\end{itemize}
+
+\subsubsection{Logical Operations}
+Logical (Boolean) operations are performed between binary images or masks, where pixel values are either 0 or 1.
+
+Let $A$ and $B$ be two binary images.
+
+\paragraph{1. AND Operation:}
+\begin{equation}
+C(x, y) = A(x, y) \land B(x, y)
+\end{equation}
+Result is 1 only where both $A$ and $B$ are 1. Used for region intersection or masking.
+
+\paragraph{2. OR Operation:}
+\begin{equation}
+C(x, y) = A(x, y) \lor B(x, y)
+\end{equation}
+Combines objects from multiple binary masks.
+
+\paragraph{3. XOR Operation:}
+\begin{equation}
+C(x, y) = A(x, y) \oplus B(x, y)
+\end{equation}
+Highlights differences between two binary images.
+
+\paragraph{4. NOT Operation:}
+\begin{equation}
+C(x, y) = \neg A(x, y) = 1 - A(x, y)
+\end{equation}
+Inverts black and white regions, often used to obtain complementary masks.
+
+\subsubsection{Composite Operations}
+Logical and arithmetic operations are often combined for practical tasks:
+\begin{itemize}
+\item Masking and extraction:
+\[
+g(x, y) = f(x, y) \cdot (A(x, y) \land B(x, y))
+\]
+\item Conditional operations:
+\[
+g(x, y) = 
+\begin{cases}
+f_1(x, y), & A(x, y) = 1 \\
+f_2(x, y), & A(x, y) = 0
+\end{cases}
+\]
+\end{itemize}
+
+\subsubsection{Summary:}
+\begin{itemize}
+\item Arithmetic operations are fundamental for enhancement (e.g., addition, subtraction, averaging).
+\item Logical operations control image regions and are key for segmentation and masking.
+\item Both types of operations form the mathematical basis of more advanced methods like image blending, morphing, and pixelwise classification.
+\end{itemize}
+
+\subsection{Geometric Transformations}
+
+\paragraph{Definition:}
+Geometric transformations alter the spatial relationship between pixels in an image.  
+They involve repositioning, resizing, or warping the image without directly changing its gray levels.
+
+Formally, a geometric transformation maps coordinates $(x, y)$ in the input image $f(x, y)$ to new coordinates $(x', y')$ in the output image $g(x', y')$ via a mapping function:
+\begin{equation}
+\begin{bmatrix} x' \\ y' \end{bmatrix}
+= T \left( \begin{bmatrix} x \\ y \end{bmatrix} \right)
+\end{equation}
+
+\paragraph{General Procedure:}
+\begin{enumerate}
+\item Define the spatial transformation: $(x', y') = T(x, y)$
+\item Find the inverse mapping: $(x, y) = T^{-1}(x', y')$
+\item Interpolate the gray level at $(x, y)$ to obtain $g(x', y')$
+\end{enumerate}
+Because pixel coordinates are discrete, interpolation (nearest, bilinear, or bicubic) is required after transformation.
+
+\subsubsection{Translation}
+Translation shifts an image by $(t_x, t_y)$ units:
+\begin{equation}
+\begin{bmatrix} x' \\ y' \end{bmatrix}
+= 
+\begin{bmatrix} x + t_x \\ y + t_y \end{bmatrix}
+\end{equation}
+
+The transformation matrix in homogeneous coordinates:
+\begin{equation}
+\begin{bmatrix}
+x' \\ y' \\ 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 0 & t_x \\
+0 & 1 & t_y \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\ y \\ 1
+\end{bmatrix}
+\end{equation}
+
+\subsubsection{Scaling}
+Scaling changes image size by factors $s_x$ and $s_y$ along $x$ and $y$ axes:
+\begin{equation}
+\begin{bmatrix} x' \\ y' \end{bmatrix} =
+\begin{bmatrix} s_x & 0 \\ 0 & s_y \end{bmatrix}
+\begin{bmatrix} x \\ y \end{bmatrix}
+\end{equation}
+
+For $s_x, s_y > 1$, the image enlarges; for $s_x, s_y < 1$, it shrinks.  
+If $s_x \ne s_y$, the scaling is anisotropic (non-uniform).
+
+In homogeneous form:
+\begin{equation}
+\begin{bmatrix}
+x' \\ y' \\ 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+s_x & 0 & 0 \\
+0 & s_y & 0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\ y \\ 1
+\end{bmatrix}
+\end{equation}
+
+\subsubsection{Rotation}
+Rotation by an angle $\theta$ (counterclockwise about the origin) is expressed as:
+\begin{equation}
+\begin{bmatrix} x' \\ y' \end{bmatrix} =
+\begin{bmatrix}
+\cos\theta & -\sin\theta \\
+\sin\theta & \cos\theta
+\end{bmatrix}
+\begin{bmatrix} x \\ y \end{bmatrix}
+\end{equation}
+
+To rotate around an arbitrary point $(x_c, y_c)$:
+\begin{enumerate}
+\item Translate the image so that $(x_c, y_c)$ moves to the origin.
+\item Apply rotation.
+\item Translate back.
+\end{enumerate}
+
+Combined transformation:
+\begin{equation}
+\begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} =
+\begin{bmatrix}
+1 & 0 & x_c \\
+0 & 1 & y_c \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+\cos\theta & -\sin\theta & 0 \\
+\sin\theta & \cos\theta & 0 \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 & -x_c \\
+0 & 1 & -y_c \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+\end{equation}
+
+\subsubsection{Reflection}
+Reflection produces a mirror image with respect to a chosen axis.
+\begin{itemize}
+\item About the $x$-axis:
+\[
+\begin{bmatrix} x' \\ y' \end{bmatrix} =
+\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}
+\begin{bmatrix} x \\ y \end{bmatrix}
+\]
+\item About the $y$-axis:
+\[
+\begin{bmatrix} x' \\ y' \end{bmatrix} =
+\begin{bmatrix} -1 & 0 \\ 0 & 1 \end{bmatrix}
+\begin{bmatrix} x \\ y \end{bmatrix}
+\]
+\end{itemize}
+
+\subsubsection{Shearing}
+Shearing displaces one coordinate axis proportionally to the other:
+\begin{equation}
+\begin{bmatrix} x' \\ y' \end{bmatrix} =
+\begin{bmatrix} 1 & a \\ b & 1 \end{bmatrix}
+\begin{bmatrix} x \\ y \end{bmatrix}
+\end{equation}
+where $a$ and $b$ are shear factors along $x$ and $y$ directions.  
+It skews the image while preserving parallelism of lines.
+
+\subsubsection{Affine Transformations}
+Affine transformations combine translation, rotation, scaling, and shearing into a single matrix:
+\begin{equation}
+\begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} =
+\begin{bmatrix}
+a_{11} & a_{12} & t_x \\
+a_{21} & a_{22} & t_y \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+\end{equation}
+Affine transformations preserve collinearity and ratios of distances along parallel lines.
+
+\subsubsection{Nonlinear Transformations}
+In some cases, transformations are nonlinear (e.g., perspective correction, lens distortion, panoramic warping).  
+Such transformations cannot be represented by a simple affine matrix and require nonlinear mapping functions.
+
+\subsubsection{Interpolation Methods}
+Since transformed coordinates $(x', y')$ are not integer-valued, interpolation determines pixel intensity:
+\begin{itemize}
+\item \textbf{Nearest-Neighbor:} Fast but produces blocky images.
+\item \textbf{Bilinear:} Weighted average of 4 nearest pixels.
+\item \textbf{Bicubic:} Considers 16 neighbors for smooth transitions.
+\end{itemize}
+
+\paragraph{Summary:}
+\begin{itemize}
+\item Geometric transformations alter image geometry but not pixel intensity.
+\item Affine models enable complex transformations via matrix multiplication.
+\item Interpolation is crucial for visual quality after transformation.
+\end{itemize}
+
+
+\paragraph{Conclusion:} Digital image fundamentals unify physical optics, sensor engineering, and digital sampling theory. Understanding light behavior, image formation, quantization, and pixel connectivity lays the groundwork for subsequent topics like enhancement, restoration, and segmentation.
+
+%---------------------------------------------------------------
+\section{Image Enhancement in the Spatial Domain}
+
+\subsection{Overview}
+Image enhancement seeks to improve the interpretability or perception of information in images for human viewers or to provide better input for automated image analysis. According to Gonzalez and Woods (Chapter 3), spatial domain enhancement techniques work directly on pixels and their neighborhoods. The general form of a spatial domain operation is:
+\begin{equation}
+g(x, y) = T[f(x, y)]
+\end{equation}
+where $T$ is an operator defined over a neighborhood of $(x,y)$ in the input image $f$. The operator may act on individual pixels (point processing) or groups of pixels (spatial filtering). Enhancement operations are application-dependent, designed to highlight or suppress specific features.
+
+\subsection{Gray-Level Transformations}
+These transformations modify pixel intensities globally or locally. The mapping function $s = T(r)$ transforms input gray level $r$ into output gray level $s$.
+
+\paragraph{1. Image Negatives:} The negative transformation inverts gray levels:
+\begin{equation}
+s(r) = (L - 1) - r
+\end{equation}
+where $L$ is the maximum gray level (e.g., 256 for 8-bit images). This operation is particularly useful for enhancing details in bright regions of images such as X-rays or satellite photos.
+
+\paragraph{2. Logarithmic Transformation:} Used to compress high dynamic range:
+\begin{equation}
+s = c \log(1 + r)
+\end{equation}
+where $c$ is a scaling constant. The log transformation maps narrow ranges of low-intensity values into a wider output range, enhancing details in dark areas while compressing brighter regions.
+
+\paragraph{3. Power-Law (Gamma) Transformation:}
+\begin{equation}
+s = c r^{\gamma}
+\end{equation}
+with parameter $\gamma$ controlling contrast. For $\gamma < 1$, the output image is brighter; for $\gamma > 1$, it is darker. Gamma correction is crucial for adjusting nonlinear display responses.
+
+\paragraph{4. Piecewise Linear Transformations:}
+Piecewise linear mappings provide more flexible control. Typical uses include:
+\begin{itemize}
+\item \textbf{Contrast Stretching:} Expands gray levels in the midrange of the histogram.
+\item \textbf{Gray-Level Slicing:} Emphasizes a specific range of intensities.
+\item \textbf{Bit-Plane Slicing:} Separates images into their binary significance layers.
+\end{itemize}
+
+\paragraph{Contrast Stretching Example:}
+\begin{equation}
+s = 
+\begin{cases}
+0, & r \le r_1 \\
+\frac{(r - r_1)}{(r_2 - r_1)}(s_2 - s_1) + s_1, & r_1 < r < r_2 \\
+L - 1, & r \ge r_2
+\end{cases}
+\end{equation}
+
+\subsection{Histogram Processing}
+Histograms are statistical representations of image intensity distributions. The histogram $h(r_k)$ indicates the number of pixels having intensity $r_k$. The normalized histogram $p_r(r_k)$ provides the probability of occurrence.
+
+\paragraph{1. Histogram Equalization:} Enhances global contrast by redistributing intensity values:
+\begin{equation}
+s_k = T(r_k) = (L - 1) \sum_{j=0}^{k} p_r(r_j)
+\end{equation}
+The mapping function $T(r_k)$ is based on the cumulative distribution function (CDF) of gray levels. Adaptive methods such as CLAHE (Contrast Limited Adaptive Histogram Equalization) apply HE locally to avoid over-amplifying noise.
+
+\paragraph{2. Histogram Matching (Specification):} Used when a specific histogram shape is desired. For CDFs $T(r)$ of the input image and $G(z)$ of the target image:
+\begin{equation}
+z = G^{-1}[T(r)]
+\end{equation}
+This method ensures consistent brightness and contrast across images, useful in medical and remote sensing applications.
+
+\paragraph{3. Histogram Statistics:} Measures such as mean, variance, skewness, and kurtosis characterize histogram shape. They can guide enhancement decisions, e.g., adjusting contrast in underexposed regions.
+
+\subsection{Spatial Filtering}
+Spatial filtering modifies pixel values using the local neighborhood defined by a mask or kernel $w(s, t)$. The operation is typically represented by 2D convolution:
+\begin{equation}
+g(x, y) = \sum_{s=-a}^{a}\sum_{t=-b}^{b} w(s, t)f(x+s, y+t)
+\end{equation}
+The mask size (e.g., 3×3, 5×5) determines the spatial extent of the filter.
+
+\paragraph{Smoothing Filters:}
+Used for noise reduction or blurring. Examples include:
+\begin{itemize}
+\item \textbf{Averaging Filter:} Replaces a pixel with the mean of its neighborhood.
+\item \textbf{Gaussian Filter:} Applies a weighted average giving more importance to closer pixels, minimizing artifacts.
+\end{itemize}
+
+\paragraph{Sharpening Filters:}
+Highlight edges and fine details by emphasizing high-frequency components:
+\begin{itemize}
+\item \textbf{Laplacian Filter:} Based on the second derivative:
+\begin{equation}
+\nabla^2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2}
+\end{equation}
+Discrete kernel: $\begin{bmatrix}0 & 1 & 0 \\ 1 & -4 & 1 \\ 0 & 1 & 0\end{bmatrix}$
+\item \textbf{Gradient Filters:} Use first derivatives to detect edges:
+\begin{align}
+G_x &= \begin{bmatrix}-1 & 0 & 1 \\ -2 & 0 & 2 \\ -1 & 0 & 1\end{bmatrix}, & G_y &= \begin{bmatrix}-1 & -2 & -1 \\ 0 & 0 & 0 \\ 1 & 2 & 1\end{bmatrix}
+\end{align}
+\end{itemize}
+The gradient magnitude $|\nabla f| = \sqrt{(G_x)^2 + (G_y)^2}$ yields edge intensity.
+
+\paragraph{Unsharp Masking and High-Boost Filtering:}
+Enhancement by edge reinforcement:
+\begin{equation}
+f_{sharp} = f + k(f - f_{blur})
+\end{equation}
+where $k$ controls the level of boosting.
+
+\subsection{Order-Statistics Filters}
+These nonlinear filters use the ordering of pixel values within a neighborhood.
+\begin{itemize}
+\item \textbf{Median Filter:} Replaces pixel by the median of neighbors, removing impulse (salt-and-pepper) noise.
+\item \textbf{Max/Min Filters:} Highlight bright or dark details.
+\item \textbf{Midpoint Filter:} Average of max and min intensities — useful for Gaussian noise suppression.
+\end{itemize}
+\subsection{Use of Histogram Statistics for Image Enhancement}
+
+Histogram statistics provide quantitative measures of image brightness and contrast.  
+Instead of modifying an image globally (as in histogram equalization), enhancement based on histogram statistics adapts transformations locally according to statistical parameters such as mean and variance.
+
+\subsubsection{Basic Statistical Measures}
+
+Let $p_r(r_k)$ denote the normalized histogram of an image, where $r_k$ represents a discrete gray level ($0 \le k \le L-1$).  
+Then:
+
+\paragraph{Mean (Average Brightness):}
+\begin{equation}
+\mu = \sum_{k=0}^{L-1} r_k \, p_r(r_k)
+\end{equation}
+A higher mean indicates a brighter image, while a lower mean corresponds to darker images.
+
+\paragraph{Variance (Contrast Measure):}
+\begin{equation}
+\sigma^2 = \sum_{k=0}^{L-1} (r_k - \mu)^2 p_r(r_k)
+\end{equation}
+Variance reflects intensity dispersion. High variance corresponds to high contrast.
+
+\paragraph{Skewness:}
+\begin{equation}
+\gamma = \frac{1}{\sigma^3} \sum_{k=0}^{L-1} (r_k - \mu)^3 p_r(r_k)
+\end{equation}
+It indicates histogram asymmetry — positive skew suggests more dark pixels; negative skew indicates bright dominance.
+
+\subsubsection{Brightness and Contrast Adjustment Using Statistics}
+
+A general linear gray-level transformation based on histogram statistics is:
+\begin{equation}
+s = a (r - \mu_r) + \mu_s
+\end{equation}
+where:
+\begin{itemize}
+\item $\mu_r$ = mean of the input image,
+\item $\mu_s$ = desired mean,
+\item $a = \frac{\sigma_s}{\sigma_r}$ = scaling factor based on standard deviations.
+\end{itemize}
+
+This formula shifts the mean brightness to $\mu_s$ and rescales contrast to achieve desired variance $\sigma_s^2$.
+
+\paragraph{Example:}  
+If the input image has $\mu_r = 90$, $\sigma_r = 25$, and the target image requires $\mu_s = 128$, $\sigma_s = 50$, then:
+\[
+s = 2(r - 90) + 128
+\]
+resulting in enhanced contrast and a brighter output image.
+
+\subsubsection{Local (Adaptive) Enhancement Using Mean and Variance}
+
+Enhancement can be made adaptive by computing statistics in a sliding window centered on each pixel $(x, y)$:
+\begin{equation}
+\mu_L(x, y) = \frac{1}{mn} \sum_{s=-a}^{a}\sum_{t=-b}^{b} f(x+s, y+t)
+\end{equation}
+\begin{equation}
+\sigma_L^2(x, y) = \frac{1}{mn} \sum_{s=-a}^{a}\sum_{t=-b}^{b} [f(x+s, y+t) - \mu_L(x, y)]^2
+\end{equation}
+
+The local transformation is then defined as:
+\begin{equation}
+g(x, y) =
+\begin{cases}
+E \cdot f(x, y), & \text{if } \frac{\mu_L(x, y)}{\mu_G} \le k_1 \text{ and } \frac{\sigma_L(x, y)}{\sigma_G} \le k_2 \\
+f(x, y), & \text{otherwise}
+\end{cases}
+\end{equation}
+where:
+\begin{itemize}
+\item $\mu_G, \sigma_G$ are the global mean and standard deviation,
+\item $E$ is an enhancement scaling factor (typically 2–4),
+\item $k_1, k_2$ define contrast thresholds for enhancement.
+\end{itemize}
+
+This adaptive method enhances low-contrast regions while leaving well-contrasted areas unchanged.
+
+\subsubsection{Mean and Variance Equalization}
+
+Instead of directly modifying pixel values, mean and variance equalization seeks to make local regions statistically similar to the global image.  
+The transformation:
+\begin{equation}
+g(x, y) = \mu_G + \frac{\sigma_G}{\sigma_L(x, y)} [f(x, y) - \mu_L(x, y)]
+\end{equation}
+equalizes both brightness and contrast locally, ensuring uniform appearance.
+
+\subsubsection{Applications}
+
+\begin{itemize}
+\item Medical imaging — locally enhancing low-contrast tissues.
+\item Remote sensing — improving details in shadowed or overexposed regions.
+\item Document enhancement — making faded text legible.
+\end{itemize}
+
+\subsubsection{Summary}
+
+\begin{itemize}
+\item Histogram statistics (mean, variance) provide quantitative guidance for adaptive enhancement.
+\item Linear transformations based on $\mu$ and $\sigma$ control brightness and contrast explicitly.
+\item Local adaptive methods dynamically adjust intensity mapping to reveal hidden details.
+\end{itemize}
+
+
+\subsection{Combining Enhancement Methods}
+A typical image enhancement workflow:
+\begin{enumerate}
+\item Histogram equalization to improve global contrast.
+\item Spatial smoothing to suppress noise.
+\item Sharpening filters (Laplacian or gradient) for edge enhancement.
+\end{enumerate}
+
+Adaptive techniques adjust enhancement parameters according to local image statistics (mean, variance), improving robustness against non-uniform illumination.
+
+\paragraph{Summary:} Spatial domain enhancement provides direct, interpretable control over image brightness, contrast, and detail. These methods serve as the foundation for frequency domain and adaptive enhancement strategies explored in subsequent sections.
+
+\subsection{Image Subtraction}
+
+Image subtraction enhances differences between two images of the same scene.  
+Given two images $f_1(x, y)$ and $f_2(x, y)$:
+\begin{equation}
+g(x, y) = f_1(x, y) - f_2(x, y)
+\end{equation}
+
+This operation can be used to detect changes, highlight edges, or remove unwanted background illumination.
+
+\paragraph{Applications:}
+\begin{itemize}
+\item \textbf{Change Detection:}  
+Used in remote sensing or medical imaging to identify temporal differences (e.g., tumor progression, flood area changes).
+\item \textbf{Background Subtraction:}  
+When $f_2(x, y)$ represents a static background, subtraction isolates moving or new objects:
+\[
+g(x, y) = | f_{\text{current}}(x, y) - f_{\text{background}}(x, y) |
+\]
+\item \textbf{Edge Enhancement:}  
+Subtracting a low-pass (blurred) version from the original image emphasizes high-frequency detail:
+\[
+g(x, y) = f(x, y) - f_{LP}(x, y)
+\]
+This is the principle behind \textbf{unsharp masking}.
+\end{itemize}
+
+\paragraph{Dynamic Range Considerations:}  
+Because subtraction can yield negative values, results are typically normalized or shifted to ensure all pixels lie within $[0, L-1]$.  
+Common normalization:
+\[
+g'(x, y) = \frac{g(x, y) - g_{\min}}{g_{\max} - g_{\min}} \times (L - 1)
+\]
+
+\paragraph{Example:}  
+In medical X-ray analysis, subtracting a reference “before” image from an “after” image highlights newly developed lesions or fractures.
+
+\subsection{Image Averaging}
+
+Image averaging is a statistical technique for noise reduction and SNR improvement.  
+When multiple images of the same scene are captured under identical conditions, random noise can be suppressed through averaging.
+
+Given $K$ noisy images $f_1, f_2, \dots, f_K$, the average image is:
+\begin{equation}
+\bar{f}(x, y) = \frac{1}{K} \sum_{i=1}^{K} f_i(x, y)
+\end{equation}
+
+\paragraph{Noise Suppression Principle:}  
+Assuming additive noise $n_i(x, y)$ with zero mean and variance $\sigma^2$:
+\[
+f_i(x, y) = f(x, y) + n_i(x, y)
+\]
+Then:
+\[
+E[\bar{f}(x, y)] = f(x, y), \qquad \text{Var}[\bar{f}(x, y)] = \frac{\sigma^2}{K}
+\]
+Hence, noise standard deviation reduces as:
+\[
+\sigma_{\bar{f}} = \frac{\sigma}{\sqrt{K}}
+\]
+Thus, SNR improves proportionally to $\sqrt{K}$.
+
+\paragraph{Practical Example:}
+\begin{itemize}
+\item \textbf{Astronomy:} Stacking multiple exposures reduces sensor noise and reveals faint stars.
+\item \textbf{Microscopy:} Averaging repeated captures enhances low-light biological images.
+\end{itemize}
+
+\paragraph{Weighted Averaging:}
+If certain frames are more reliable, assign weights $w_i$ such that $\sum_i w_i = 1$:
+\begin{equation}
+\bar{f}(x, y) = \sum_{i=1}^{K} w_i f_i(x, y)
+\end{equation}
+
+\paragraph{Implementation Notes:}
+\begin{itemize}
+\item Images must be spatially registered (aligned) to avoid ghosting artifacts.
+\item Averaging is typically implemented in floating-point precision before rounding to integer pixel values.
+\end{itemize}
+
+
+%---------------------------------------------------------------
+\section{Frequency Domain Processing}
+
+\subsection{Introduction}
+Frequency domain techniques modify an image by transforming it into the frequency domain using the Fourier Transform. According to Gonzalez and Woods (Chapter 4), operations in the spatial domain correspond to multiplicative operations in the frequency domain. This approach allows selective manipulation of specific frequency components to achieve smoothing, sharpening, and noise reduction.
+
+An image can be represented as a superposition of sinusoids of varying frequencies and amplitudes. The low frequencies correspond to slowly varying intensity regions (smooth areas), while high frequencies represent rapid changes (edges and fine details).
+
+\subsection{Fourier Transform Fundamentals}
+The two-dimensional (2-D) Fourier Transform of a continuous image $f(x, y)$ is defined as:
+\begin{equation}
+F(u, v) = \int_{-\infty}^{\infty}\int_{-\infty}^{\infty} f(x, y) e^{-j2\pi(ux + vy)} dx dy
+\end{equation}
+with inverse:
+\begin{equation}
+f(x, y) = \int_{-\infty}^{\infty}\int_{-\infty}^{\infty} F(u, v) e^{j2\pi(ux + vy)} du dv
+\end{equation}
+
+For digital images, we use the discrete version — the 2-D Discrete Fourier Transform (DFT):
+\begin{equation}
+F(u,v) = \sum_{x=0}^{M-1}\sum_{y=0}^{N-1} f(x,y)e^{-j2\pi(ux/M+vy/N)}
+\end{equation}
+Inverse DFT:
+\begin{equation}
+f(x,y) = \frac{1}{MN}\sum_{u=0}^{M-1}\sum_{v=0}^{N-1} F(u,v)e^{j2\pi(ux/M+vy/N)}
+\end{equation}
+
+The DFT converts spatial domain data into a frequency domain representation, revealing periodic structures and allowing frequency-based filtering.
+
+\paragraph{Properties of the Fourier Transform:}
+\begin{itemize}
+\item \textbf{Linearity:} $\mathcal{F}{a f + b g} = aF + bG$.
+\item \textbf{Translation:} Shifting $f(x,y)$ by $(x_0,y_0)$ multiplies $F(u,v)$ by $e^{-j2\pi(ux_0/M + vy_0/N)}$.
+\item \textbf{Scaling:} Stretching in space compresses in frequency.
+\item \textbf{Convolution Theorem:} $f*h \leftrightarrow F \cdot H$. Convolution in space equals multiplication in frequency.
+\item \textbf{Correlation Theorem:} Cross-correlation in space equals conjugate multiplication in frequency.
+\end{itemize}
+
+\paragraph{Centering the Fourier Spectrum:}
+In digital processing, the zero-frequency component (DC term) appears at the image origin. To visualize the spectrum, it is shifted to the center using multiplication by $(-1)^{x+y}$ prior to the transform.
+In MATLAB, we use the \lstinline[language=python]{fftshift} function to center the spectrum.
+\subsection{Filtering in the Frequency Domain}
+Frequency domain filtering is performed as:
+\begin{equation}
+g(x, y) = \mathcal{F}^{-1}{ H(u, v)F(u, v) }
+\end{equation}
+where $H(u,v)$ is the filter transfer function. The product $H(u,v)F(u,v)$ modifies amplitude and phase components in the frequency domain. The final enhanced image is obtained via inverse DFT.
+
+\subsection{Lowpass Filtering (Smoothing)}
+Lowpass filters allow low-frequency components to pass while attenuating high-frequency details (noise, edges).
+\begin{itemize}
+\item \textbf{Ideal Lowpass Filter (ILPF):}
+\begin{equation}
+H(u,v) = 
+\begin{cases} 
+	1, & D(u,v) \le D_0 \\ 
+	0, & D(u,v) > D_0 
+\end{cases}
+\end{equation}
+Produces ringing artifacts due to sharp frequency cutoff.
+
+\item \textbf{Butterworth Lowpass Filter (BLPF):}
+\begin{equation}
+H(u,v) = \frac{1}{1 + [D(u,v)/D_0]^{2n}}
+\end{equation}
+The order $n$ controls the transition sharpness.
+
+\item \textbf{Gaussian Lowpass Filter (GLPF):}
+\begin{equation}
+H(u,v) = e^{-D^2(u,v)/(2D_0^2)}
+\end{equation}
+Provides smooth attenuation and no ringing.
+\end{itemize}
+where $D(u,v) = \sqrt{(u - M/2)^2 + (v - N/2)^2}$ is the distance from the center.
+
+\subsection{Highpass Filtering (Sharpening)}
+Highpass filters emphasize high-frequency components — edges, fine details, and noise. They are derived from lowpass filters as:
+\begin{equation}
+H_{HP}(u,v) = 1 - H_{LP}(u,v)
+\end{equation}
+Common forms:
+\begin{itemize}
+\item \textbf{Ideal Highpass Filter (IHPF):} $H(u,v)=0$ for $D(u,v)\le D_0$, $1$ otherwise.
+\item \textbf{Butterworth Highpass Filter (BHPF):} $H(u,v)=\frac{1}{1+[D_0/D(u,v)]^{2n}}$.
+\item \textbf{Gaussian Highpass Filter (GHPF):} $H(u,v)=1-e^{-D^2(u,v)/(2D_0^2)}$.
+\end{itemize}
+
+\subsection{The Laplacian in the Frequency Domain}
+The Laplacian operator enhances regions of rapid intensity change. In frequency domain form:
+\begin{equation}
+H(u,v) = -4\pi^2(u^2 + v^2)
+\end{equation}
+Filtering by this function amplifies high frequencies. The sharpened image is obtained as:
+\begin{equation}
+f_{sharp} = f - c \mathcal{F}^{-1}{H(u,v)F(u,v)}
+\end{equation}
+
+\subsection{Unsharp Masking, High-Boost, and High-Frequency Emphasis Filtering}
+\paragraph{Unsharp Masking:}
+Obtained by subtracting a blurred version from the original image:
+\begin{equation}
+f_{mask} = f - f_{blur}
+\end{equation}
+The sharpened image is:
+\begin{equation}
+f_{sharp} = f + k f_{mask}
+\end{equation}
+where $k$ controls enhancement strength.
+
+\paragraph{High-Frequency Emphasis Filtering:}
+Enhances high-frequency content while retaining some low-frequency components:
+\begin{equation}
+H_{HFE}(u,v) = a + bH_{HP}(u,v), \quad a,b > 0
+\end{equation}
+Typical choice: $a=0.5$, $b=1.5$.
+
+\subsection{Bandpass and Bandreject Filters}
+
+Bandpass and bandreject filters selectively preserve or suppress specific ranges of spatial frequencies in an image.  
+They are generalizations of lowpass and highpass filters. While lowpass filters smooth images and highpass filters sharpen edges, band filters allow selective enhancement or suppression of structures corresponding to a given frequency range.
+
+\paragraph{Definitions:}
+\begin{itemize}
+\item \textbf{Bandpass Filter (BPF):} Allows spatial frequencies within a specified band $(D_1, D_2)$ to pass and attenuates frequencies outside this band.
+\item \textbf{Bandreject Filter (BRF):} Also known as \textbf{band-stop} or \textbf{notch filter}, it suppresses frequencies within a specified range while preserving frequencies outside it.
+\end{itemize}
+
+In the frequency domain, let $D(u, v)$ represent the radial distance from the frequency origin:
+\begin{equation}
+D(u, v) = \sqrt{(u - M/2)^2 + (v - N/2)^2}
+\end{equation}
+
+Then $D_1$ and $D_2$ define the lower and upper cutoff frequencies, respectively.
+
+\subsection{Ideal Bandreject Filter (IBRF)}
+
+The ideal bandreject filter is defined as:
+\begin{equation}
+H_{BR}(u, v) =
+\begin{cases}
+0, & D_1 \le D(u, v) \le D_2 \\
+1, & \text{otherwise}
+\end{cases}
+\end{equation}
+
+The corresponding bandpass filter is simply:
+\begin{equation}
+H_{BP}(u, v) = 1 - H_{BR}(u, v)
+\end{equation}
+
+\paragraph{Characteristics:}
+\begin{itemize}
+\item Sharp transitions between pass and stop bands.
+\item Prone to ringing artifacts in the spatial domain (Gibbs phenomenon) due to abrupt cutoffs.
+\end{itemize}
+
+\paragraph{Use Case:}
+Ideal filters are primarily theoretical benchmarks; practical systems use smoother transfer functions such as Butterworth or Gaussian.
+
+\subsection{Butterworth Bandreject Filter (BBRF)}
+
+A smoother alternative with controlled transition between pass and stop bands:
+\begin{equation}
+H_{BR}(u, v) = \frac{1}{1 + \left[\frac{D(u, v) \, W}{D^2(u, v) - D_0^2}\right]^{2n}}
+\end{equation}
+where:
+\begin{itemize}
+\item $D_0 = \frac{D_1 + D_2}{2}$ is the center frequency of the rejected band.
+\item $W = D_2 - D_1$ is the bandwidth.
+\item $n$ is the filter order controlling transition sharpness.
+\end{itemize}
+
+The Butterworth bandpass filter is derived as:
+\begin{equation}
+H_{BP}(u, v) = 1 - H_{BR}(u, v)
+\end{equation}
+
+\paragraph{Properties:}
+\begin{itemize}
+\item Continuous and smooth transition with no sharp discontinuities.
+\item Controlled steepness via parameter $n$.
+\item Widely used for eliminating periodic noise (e.g., interference fringes).
+\end{itemize}
+
+\subsection{Gaussian Bandreject Filter (GBRF)}
+
+A Gaussian form provides even smoother attenuation and minimal spatial ringing:
+\begin{equation}
+H_{BR}(u, v) = 1 - e^{-\frac{1}{2}\left[\frac{D^2(u, v) - D_0^2}{D(u, v) W}\right]^2}
+\end{equation}
+
+The corresponding Gaussian bandpass filter is:
+\begin{equation}
+H_{BP}(u, v) = 1 - H_{BR}(u, v)
+\end{equation}
+
+\paragraph{Properties:}
+\begin{itemize}
+\item Exhibits no overshoot or ringing.
+\item Preferred when high visual fidelity is required.
+\item Often used in medical imaging and astronomy for precise noise isolation.
+\end{itemize}
+
+\subsection{Spatial-Domain Interpretation}
+
+Although these filters are designed in the frequency domain, they correspond to spatial operations:
+\begin{itemize}
+\item Bandreject filtering = Subtracting a high-frequency component from a low-pass filtered version.
+\item Bandpass filtering = Subtracting a lowpass version from a highpass version.
+\end{itemize}
+
+Formally:
+\begin{align}
+g_{BR}(x, y) &= f(x, y) - [f(x, y) * h_{BP}(x, y)] \\
+g_{BP}(x, y) &= [f(x, y) * h_{HP}(x, y)] - [f(x, y) * h_{LP}(x, y)]
+\end{align}
+where $*$ denotes spatial convolution.
+
+\paragraph{Practical Implementation:}
+\begin{enumerate}
+\item Compute Fourier Transform $F(u, v)$.
+\item Multiply by $H_{BR}(u, v)$ or $H_{BP}(u, v)$.
+\item Apply inverse transform to obtain $g(x, y)$.
+\end{enumerate}
+
+\subsection{Applications}
+
+\begin{itemize}
+\item \textbf{Periodic Noise Removal:} Bandreject filters attenuate narrow spectral peaks caused by power line interference or scanning artifacts.
+\item \textbf{Feature Isolation:} Bandpass filters highlight specific frequency bands corresponding to texture or repetitive structures.
+\item \textbf{Medical Imaging:} Filtering of high-frequency speckle or low-frequency illumination gradients.
+\item \textbf{Remote Sensing:} Separation of texture patterns or man-made structures from natural backgrounds.
+\end{itemize}
+
+\subsection{Comparison of Filter Types}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Filter Type} & \textbf{Transition Sharpness} & \textbf{Spatial Artifacts} & \textbf{Typical Use} \\
+\hline
+Ideal & Sharpest & Severe ringing & Theoretical or analysis only \\
+Butterworth & Moderate (adjustable via $n$) & Minimal ringing & Practical general-purpose use \\
+Gaussian & Smoothest & None & High-quality visual applications \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Correspondence Between Spatial and Frequency Domains}
+Smoothing in the spatial domain corresponds to lowpass filtering in the frequency domain, while differentiation and sharpening correspond to highpass operations. The duality is summarized as:
+\begin{align}
+\text{Convolution in space} &\leftrightarrow \text{Multiplication in frequency} \
+\text{Multiplication in space} &\leftrightarrow \text{Convolution in frequency}
+\end{align}
+
+\paragraph{Advantages of Frequency Domain Filtering:}
+\begin{itemize}
+\item Efficient for large filters via FFT implementation.
+\item Offers direct control over spatial frequencies.
+\item Enables design of precise filters (Butterworth, Gaussian) with smooth transitions.
+\end{itemize}
+
+\paragraph{Summary:} Frequency domain processing provides a powerful framework for analyzing and enhancing images based on their spectral composition. Understanding the correspondence between frequency content and spatial features allows fine control over blurring, sharpening, and detail enhancement. The use of Fourier-based filtering forms the foundation for advanced restoration techniques and spectral analysis in subsequent chapters.
+
+%---------------------------------------------------------------
+\section{Image Restoration}
+
+\subsection{Introduction}
+Image restoration seeks to recover an original, undegraded image from a corrupted observation. Unlike image enhancement, which is subjective, restoration relies on mathematical and physical models of the degradation process. As described by Gonzalez and Woods (Chapter 5), the process aims to reverse the effects of blurring, noise, and distortions that arise from system imperfections or environmental conditions.
+
+\subsection{Degradation Model}
+The image degradation process can be represented as:
+\begin{equation}
+g(x,y) = h(x,y) * f(x,y) + \eta(x,y)
+\end{equation}
+where:
+\begin{itemize}
+\item $f(x,y)$: the original image,
+\item $h(x,y)$: the degradation function or point spread function (PSF),
+\item $\eta(x,y)$: additive noise.
+\end{itemize}
+
+In the frequency domain, this convolution becomes:
+\begin{equation}
+G(u,v) = H(u,v)F(u,v) + N(u,v)
+\end{equation}
+where capital letters denote Fourier transforms. Restoration seeks to estimate $\hat{F}(u,v)$ given $G(u,v)$ and an estimate of $H(u,v)$.
+
+Common sources of degradation include atmospheric turbulence, motion blur, defocus, and electronic sensor noise.
+
+\subsection{Noise Models}
+Noise represents random variations in pixel intensities. Gonzalez identifies several key probability density functions (PDFs) used to model noise:
+
+\begin{itemize}
+\item \textbf{Gaussian Noise:}
+\begin{equation}
+p(z) = \frac{1}{\sqrt{2\pi\sigma}} e^{-(z - \mu)^2 / (2\sigma^2)}
+\end{equation}
+Ubiquitous due to thermal fluctuations and electronic interference.
+
+\item \textbf{Rayleigh Noise:}
+Models radar and coherent imaging systems.
+\begin{equation}
+p(z) = \frac{z - a}{b^2} e^{-(z - a)^2 / (2b^2)}, \quad z \ge a
+\end{equation}
+
+\item \textbf{Exponential Noise:}
+Used for certain illumination-based imaging.
+\begin{equation}
+p(z) = a e^{-az}, \quad z \ge 0
+\end{equation}
+
+\item \textbf{Uniform Noise:}
+Equal probability in a given range; often introduced by quantization.
+
+\item \textbf{Salt-and-Pepper (Impulse) Noise:}
+Random occurrence of black and white pixels. Typically modeled as:
+\begin{equation}
+p(z) = P_a \text{ at } z=a, \quad p(z) = P_b \text{ at } z=b, \quad p(z)=0 \text{ elsewhere.}
+\end{equation}
+\end{itemize}
+
+\subsection{Estimation of Noise Parameters}
+Noise parameters are typically estimated from homogeneous image regions or by computing the variance and mean of difference images. If the noise is additive and uncorrelated, its power spectral density can be approximated from flat-field images.
+
+\subsection{Restoration in the Spatial Domain}
+Spatial filtering techniques operate directly on pixel neighborhoods to suppress noise or invert blur.
+
+\paragraph{1. Mean Filters (Averaging Filters):}
+Reduce Gaussian noise by local averaging:
+\begin{equation}
+g(x,y) = \frac{1}{mn} \sum_{s=-a}^{a} \sum_{t=-b}^{b} f(x+s, y+t)
+\end{equation}
+This reduces variance but blurs edges.
+
+\paragraph{2. Order-Statistics Filters:}
+\begin{itemize}
+\item \textbf{Median Filter:} Replaces each pixel by the median of its neighbors; highly effective for impulse noise.
+\item \textbf{Max/Min Filters:} Used to remove positive or negative spikes.
+\item \textbf{Adaptive Median Filter:} Varies window size based on local noise characteristics.
+\end{itemize}
+
+\paragraph{3. Adaptive Local Noise Reduction Filter:}
+This filter adjusts its smoothing strength using local mean $\mu_L$ and variance $\sigma_L^2$:
+\begin{equation}
+\hat{f}(x,y) = g(x,y) - \frac{\sigma_\eta^2}{\sigma_L^2} [g(x,y) - \mu_L]
+\end{equation}
+where $\sigma_\eta^2$ is the estimated noise variance.
+
+\subsection{Frequency Domain Restoration}
+Frequency-based methods exploit the convolution theorem to perform restoration efficiently.
+
+\paragraph{1. Inverse Filtering:}
+The simplest approach assumes perfect knowledge of $H(u,v)$:
+\begin{equation}
+\hat{F}(u,v) = \frac{G(u,v)}{H(u,v)}
+\end{equation}
+However, small values of $H(u,v)$ amplify noise significantly, making this approach unstable.
+
+\paragraph{2. Wiener Filtering (Minimum Mean Square Error Filter):}
+Minimizes the mean square error between the estimated and true images:
+\begin{equation}
+\hat{F}(u,v) = \frac{H^*(u,v)}{|H(u,v)|^2 + S_\eta(u,v)/S_f(u,v)} G(u,v)
+\end{equation}
+where $S_\eta(u,v)$ and $S_f(u,v)$ are the power spectra of the noise and the original image, respectively. Wiener filtering balances deblurring and noise suppression optimally.
+
+\paragraph{3. Constrained Least Squares (CLS) Filtering:}
+Formulated as minimizing:
+\begin{equation}
+J = | H F - G |^2 + \gamma | P F |^2
+\end{equation}
+where $P$ is a high-pass operator (e.g., Laplacian) that penalizes excessive sharpness and $\gamma$ is a regularization parameter. The solution is:
+\begin{equation}
+\hat{F}(u,v) = \frac{H^*(u,v)}{|H(u,v)|^2 + \gamma |P(u,v)|^2} G(u,v)
+\end{equation}
+CLS filtering is more robust than pure inverse filtering and easier to tune than Wiener filtering.
+
+\subsection{Periodic Noise and Frequency Domain Filtering}
+Periodic noise manifests as distinct spikes in the frequency spectrum. It is removed using notch filters that zero out affected frequencies.
+
+\paragraph{1. Bandreject and Bandpass Filters:}
+\begin{itemize}
+\item \textbf{Bandreject:} Removes frequencies within a specified range.
+\item \textbf{Bandpass:} Passes only frequencies within a specific band.
+\end{itemize}
+
+\paragraph{2. Notch Filters:}
+Target periodic interference at specific frequency locations $(u_k, v_k)$:
+\begin{equation}
+H(u,v) = \prod_k [1 - e^{-((u-u_k)^2 + (v-v_k)^2)/(2D_0^2)}]
+\end{equation}
+Optimum notch filters combine both selective suppression and smooth transitions.
+
+\subsection{Estimation of the Degradation Function}
+Estimating $H(u,v)$ is crucial for restoration. Common methods include:
+\begin{itemize}
+\item \textbf{Observation-Based:} Analyzing known reference patterns.
+\item \textbf{Experimentation:} Simulating system response using test images.
+\item \textbf{Model-Based:} Assuming motion blur or defocus models. For linear motion blur:
+\begin{equation}
+h(x,y) = \frac{1}{L} \text{rect}\left(\frac{x\cos\theta + y\sin\theta}{L}\right)
+\end{equation}
+where $L$ is blur length and $\theta$ is motion angle.
+\end{itemize}
+
+\subsection{Inverse and Blind Deconvolution}
+\paragraph{Inverse Filtering:} Works when $H(u,v)$ is precisely known; sensitive to noise.
+\paragraph{Blind Deconvolution:} Estimates both $H(u,v)$ and $F(u,v)$ simultaneously. Iterative algorithms such as the Richardson-Lucy method are commonly used.
+
+\subsection{Summary}
+Image restoration is a mathematically rigorous process that leverages models of image degradation to reconstruct the original scene. Unlike enhancement, it uses knowledge of $H(u,v)$ and noise characteristics to derive optimal filters. Spatial filters handle simple noise types, while frequency domain techniques like Wiener and CLS filtering provide powerful tools for deblurring and denoising images affected by complex degradations.
+
+%---------------------------------------------------------------
+\section{Conclusion}
+Digital image processing combines physical models of light and perception with computational tools such as convolution, Fourier analysis, and statistical estimation. Mastery of both spatial and frequency domain techniques is essential for robust image enhancement, restoration, and analysis.
+
+\end{document}
+
