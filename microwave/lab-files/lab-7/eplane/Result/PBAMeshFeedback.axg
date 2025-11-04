@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CSTAuxiliaryGeometry version="20170928">
+  <Objects>
+    <Object name="Lines" id="1">
+      <LineSet points="12 50 39 12 50 51 12 6 51 12 6 90 12 6 0 12 6 39 12 -6 0 12 -6 90 -12 50 39 -12 50 51 -12 6 51 -12 6 90 -12 6 0 -12 6 39 -12 -6 0 -12 -6 90 12 -6 90 12 6 90 -12 -6 90 -12 6 90 12 6 51 12 50 51 -12 6 51 -12 50 51 12 6 39 12 50 39 -12 6 39 -12 50 39 12 -6 0 12 6 0 -12 -6 0 -12 6 0 -12 50 51 12 50 51 -12 50 39 12 50 39 -12 6 90 12 6 90 -12 6 0 12 6 0 -11.4300003 5.07999992 50.0800018 11.4300003 5.07999992 50.0800018 -11.4300003 5.07999992 39.9199982 11.4300003 5.07999992 39.9199982 -12 -6 90 12 -6 90 -12 -6 0 12 -6 0" stripped="0" material="$CornerCorrectionMaterial$"/>
+    </Object>
+  </Objects>
+  <Materials/>
+  <Groups>
+    <Group name="Corner Correction" type="Undefined" ID="1">
+      <Item name="Lines" type="solid" id="1"/>
+    </Group>
+  </Groups>
+</CSTAuxiliaryGeometry>

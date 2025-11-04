@@ -1,0 +1,510 @@
+{
+    "general": {
+        "version": "2024.5",
+        "date": "2024-06-14",
+        "acis": "33.0.1",
+        "buildnumber": "20240614",
+        "project_type": "MWS",
+        "length": "mm",
+        "frequency": {
+            "unit": "GHz",
+            "minimum": "4",
+            "maximum": "14",
+            "minimum_expr": "4",
+            "maximum_expr": "14"
+        },
+        "time": "ns",
+        "created": "2024.5|33.0.1|20240614"
+    },
+    "history": [
+        {
+            "caption": "use template: Antenna - Waveguide_2.cfg",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "'set the units",
+                "With Units",
+                "    .SetUnit \"Length\", \"mm\"",
+                "    .SetUnit \"Frequency\", \"GHz\"",
+                "    .SetUnit \"Voltage\", \"V\"",
+                "    .SetUnit \"Resistance\", \"Ohm\"",
+                "    .SetUnit \"Inductance\", \"nH\"",
+                "    .SetUnit \"Temperature\",  \"K\"",
+                "    .SetUnit \"Time\", \"ns\"",
+                "    .SetUnit \"Current\", \"A\"",
+                "    .SetUnit \"Conductance\", \"S\"",
+                "    .SetUnit \"Capacitance\", \"pF\"",
+                "End With",
+                "",
+                "'----------------------------------------------------------------------------",
+                "",
+                "'set the frequency range",
+                "Solver.FrequencyRange \"4\", \"14\"",
+                "",
+                "'----------------------------------------------------------------------------",
+                "",
+                "Plot.DrawBox True",
+                "",
+                "With Background",
+                "     .Type \"Normal\"",
+                "     .Epsilon \"1.0\"",
+                "     .Mu \"1.0\"",
+                "     .XminSpace \"0.0\"",
+                "     .XmaxSpace \"0.0\"",
+                "     .YminSpace \"0.0\"",
+                "     .YmaxSpace \"0.0\"",
+                "     .ZminSpace \"0.0\"",
+                "     .ZmaxSpace \"0.0\"",
+                "End With",
+                "",
+                "With Boundary",
+                "     .Xmin \"expanded open\"",
+                "     .Xmax \"expanded open\"",
+                "     .Ymin \"expanded open\"",
+                "     .Ymax \"expanded open\"",
+                "     .Zmin \"expanded open\"",
+                "     .Zmax \"expanded open\"",
+                "     .Xsymmetry \"none\"",
+                "     .Ysymmetry \"none\"",
+                "     .Zsymmetry \"none\"",
+                "End With",
+                "",
+                "' switch on FD-TET setting for accurate farfields",
+                "",
+                "FDSolver.ExtrudeOpenBC \"True\"",
+                "",
+                "Mesh.FPBAAvoidNonRegUnite \"True\"",
+                "Mesh.ConsiderSpaceForLowerMeshLimit \"False\"",
+                "Mesh.MinimumStepNumber \"5\"",
+                "",
+                "With MeshSettings",
+                "     .SetMeshType \"Hex\"",
+                "     .Set \"RatioLimitGeometry\", \"20\"",
+                "End With",
+                "",
+                "With MeshSettings",
+                "     .SetMeshType \"HexTLM\"",
+                "     .Set \"RatioLimitGeometry\", \"20\"",
+                "End With",
+                "",
+                "PostProcess1D.ActivateOperation \"vswr\", \"true\"",
+                "PostProcess1D.ActivateOperation \"yz-matrices\", \"true\"",
+                "",
+                "With FarfieldPlot",
+                "\t.ClearCuts ' lateral=phi, polar=theta",
+                "\t.AddCut \"lateral\", \"0\", \"1\"",
+                "\t.AddCut \"lateral\", \"90\", \"1\"",
+                "\t.AddCut \"polar\", \"90\", \"1\"",
+                "End With",
+                "",
+                "'----------------------------------------------------------------------------",
+                "",
+                "Dim sDefineAt As String",
+                "sDefineAt = \"4;10;14\"",
+                "Dim sDefineAtName As String",
+                "sDefineAtName = \"4;10;14\"",
+                "Dim sDefineAtToken As String",
+                "sDefineAtToken = \"f=\"",
+                "Dim aFreq() As String",
+                "aFreq = Split(sDefineAt, \";\")",
+                "Dim aNames() As String",
+                "aNames = Split(sDefineAtName, \";\")",
+                "",
+                "Dim nIndex As Integer",
+                "For nIndex = LBound(aFreq) To UBound(aFreq)",
+                "",
+                "Dim zz_val As String",
+                "zz_val = aFreq (nIndex)",
+                "Dim zz_name As String",
+                "zz_name = sDefineAtToken & aNames (nIndex)",
+                "",
+                "' Define E-Field Monitors",
+                "With Monitor",
+                "    .Reset",
+                "    .Name \"e-field (\"& zz_name &\")\"",
+                "    .Dimension \"Volume\"",
+                "    .Domain \"Frequency\"",
+                "    .FieldType \"Efield\"",
+                "    .MonitorValue  zz_val",
+                "    .Create",
+                "End With",
+                "",
+                "' Define H-Field Monitors",
+                "With Monitor",
+                "    .Reset",
+                "    .Name \"h-field (\"& zz_name &\")\"",
+                "    .Dimension \"Volume\"",
+                "    .Domain \"Frequency\"",
+                "    .FieldType \"Hfield\"",
+                "    .MonitorValue  zz_val",
+                "    .Create",
+                "End With",
+                "",
+                "' Define Power flow Monitors",
+                "With Monitor",
+                "    .Reset",
+                "    .Name \"power (\"& zz_name &\")\"",
+                "    .Dimension \"Volume\"",
+                "    .Domain \"Frequency\"",
+                "    .FieldType \"Powerflow\"",
+                "    .MonitorValue  zz_val",
+                "    .Create",
+                "End With",
+                "",
+                "' Define Power loss Monitors",
+                "With Monitor",
+                "    .Reset",
+                "    .Name \"loss (\"& zz_name &\")\"",
+                "    .Dimension \"Volume\"",
+                "    .Domain \"Frequency\"",
+                "    .FieldType \"Powerloss\"",
+                "    .MonitorValue  zz_val",
+                "    .Create",
+                "End With",
+                "",
+                "Next",
+                "",
+                "'----------------------------------------------------------------------------",
+                "",
+                "With MeshSettings",
+                "     .SetMeshType \"Hex\"",
+                "     .Set \"Version\", 1%",
+                "End With",
+                "",
+                "With Mesh",
+                "     .MeshType \"PBA\"",
+                "End With",
+                "",
+                "'set the solver type",
+                "ChangeSolverType(\"HF Time Domain\")",
+                "",
+                "'----------------------------------------------------------------------------"
+            ]
+        },
+        {
+            "caption": "new component: component1",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Component.New \"component1\""
+            ]
+        },
+        {
+            "caption": "define brick: component1:solid1",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "With Brick",
+                "     .Reset ",
+                "     .Name \"solid1\" ",
+                "     .Component \"component1\" ",
+                "     .Material \"PEC\" ",
+                "     .Xrange \"-24/2\", \"24/2\" ",
+                "     .Yrange \"-12/2\", \"12/2\" ",
+                "     .Zrange \"0\", \"90\" ",
+                "     .Create",
+                "End With"
+            ]
+        },
+        {
+            "caption": "activate local coordinates",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "WCS.ActivateWCS \"local\""
+            ]
+        },
+        {
+            "caption": "activate global coordinates",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "WCS.ActivateWCS \"global\""
+            ]
+        },
+        {
+            "caption": "define brick: component1:EA",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "With Brick",
+                "     .Reset ",
+                "     .Name \"EA\" ",
+                "     .Component \"component1\" ",
+                "     .Material \"PEC\" ",
+                "     .Xrange \"-24/2\", \"24/2\" ",
+                "     .Yrange \"10.16/2\", \"50\" ",
+                "     .Zrange \"45-12/2\", \"45 + 12/2\" ",
+                "     .Create",
+                "End With"
+            ]
+        },
+        {
+            "caption": "boolean add shapes: component1:EA, component1:solid1",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Solid.Add \"component1:EA\", \"component1:solid1\""
+            ]
+        },
+        {
+            "caption": "define brick: component1:cut1",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "With Brick",
+                "     .Reset ",
+                "     .Name \"cut1\" ",
+                "     .Component \"component1\" ",
+                "     .Material \"PEC\" ",
+                "     .Xrange \"-22.86/2\", \"22.86/2\" ",
+                "     .Yrange \"-10.16/2\", \"10.16/2\" ",
+                "     .Zrange \"0\", \"90\" ",
+                "     .Create",
+                "End With"
+            ]
+        },
+        {
+            "caption": "boolean subtract shapes: component1:EA, component1:cut1",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Solid.Subtract \"component1:EA\", \"component1:cut1\""
+            ]
+        },
+        {
+            "caption": "define brick: component1:cut2",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "With Brick",
+                "     .Reset ",
+                "     .Name \"cut2\" ",
+                "     .Component \"component1\" ",
+                "     .Material \"PEC\" ",
+                "     .Xrange \"-22.86/2\", \"22.86/2\" ",
+                "     .Yrange \"10.16/2\", \"50\" ",
+                "     .Zrange \"45-10.16/2\", \"45+10.16/2\" ",
+                "     .Create",
+                "End With"
+            ]
+        },
+        {
+            "caption": "boolean subtract shapes: component1:EA, component1:cut2",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Solid.Subtract \"component1:EA\", \"component1:cut2\""
+            ]
+        },
+        {
+            "caption": "clear picks",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Pick.ClearAllPicks"
+            ]
+        },
+        {
+            "caption": "pick edge",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Pick.PickEdgeFromId \"component1:EA\", \"65\", \"51\""
+            ]
+        },
+        {
+            "caption": "pick edge",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Pick.PickEdgeFromId \"component1:EA\", \"70\", \"50\""
+            ]
+        },
+        {
+            "caption": "define port: 1",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "With Port ",
+                "     .Reset ",
+                "     .PortNumber \"1\" ",
+                "     .Label \"E_poRt\"",
+                "     .Folder \"\"",
+                "     .NumberOfModes \"1\"",
+                "     .AdjustPolarization \"False\"",
+                "     .PolarizationAngle \"0.0\"",
+                "     .ReferencePlaneDistance \"0\"",
+                "     .TextSize \"50\"",
+                "     .TextMaxLimit \"0\"",
+                "     .Coordinates \"Picks\"",
+                "     .Orientation \"positive\"",
+                "     .PortOnBound \"False\"",
+                "     .ClipPickedPortToBound \"False\"",
+                "     .Xrange \"-11.43\", \"11.43\"",
+                "     .Yrange \"50\", \"50\"",
+                "     .Zrange \"39.92\", \"50.08\"",
+                "     .XrangeAdd \"0.0\", \"0.0\"",
+                "     .YrangeAdd \"0.0\", \"0.0\"",
+                "     .ZrangeAdd \"0.0\", \"0.0\"",
+                "     .SingleEnded \"False\"",
+                "     .WaveguideMonitor \"False\"",
+                "     .Create ",
+                "End With"
+            ]
+        },
+        {
+            "caption": "pick edge",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Pick.PickEdgeFromId \"component1:EA\", \"59\", \"42\""
+            ]
+        },
+        {
+            "caption": "pick edge",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Pick.PickEdgeFromId \"component1:EA\", \"61\", \"44\""
+            ]
+        },
+        {
+            "caption": "define port: 2",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "With Port ",
+                "     .Reset ",
+                "     .PortNumber \"2\" ",
+                "     .Label \"port1\"",
+                "     .Folder \"\"",
+                "     .NumberOfModes \"1\"",
+                "     .AdjustPolarization \"False\"",
+                "     .PolarizationAngle \"0.0\"",
+                "     .ReferencePlaneDistance \"0\"",
+                "     .TextSize \"50\"",
+                "     .TextMaxLimit \"0\"",
+                "     .Coordinates \"Picks\"",
+                "     .Orientation \"positive\"",
+                "     .PortOnBound \"False\"",
+                "     .ClipPickedPortToBound \"False\"",
+                "     .Xrange \"-11.43\", \"11.43\"",
+                "     .Yrange \"-5.08\", \"5.08\"",
+                "     .Zrange \"90\", \"90\"",
+                "     .XrangeAdd \"0.0\", \"0.0\"",
+                "     .YrangeAdd \"0.0\", \"0.0\"",
+                "     .ZrangeAdd \"0.0\", \"0.0\"",
+                "     .SingleEnded \"False\"",
+                "     .WaveguideMonitor \"False\"",
+                "     .Create ",
+                "End With"
+            ]
+        },
+        {
+            "caption": "pick edge",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Pick.PickEdgeFromId \"component1:EA\", \"60\", \"43\""
+            ]
+        },
+        {
+            "caption": "pick edge",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Pick.PickEdgeFromId \"component1:EA\", \"58\", \"41\""
+            ]
+        },
+        {
+            "caption": "define port: 3",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "With Port ",
+                "     .Reset ",
+                "     .PortNumber \"3\" ",
+                "     .Label \"port2\"",
+                "     .Folder \"\"",
+                "     .NumberOfModes \"1\"",
+                "     .AdjustPolarization \"False\"",
+                "     .PolarizationAngle \"0.0\"",
+                "     .ReferencePlaneDistance \"0\"",
+                "     .TextSize \"50\"",
+                "     .TextMaxLimit \"0\"",
+                "     .Coordinates \"Picks\"",
+                "     .Orientation \"positive\"",
+                "     .PortOnBound \"False\"",
+                "     .ClipPickedPortToBound \"False\"",
+                "     .Xrange \"-11.43\", \"11.43\"",
+                "     .Yrange \"-5.08\", \"5.08\"",
+                "     .Zrange \"0\", \"0\"",
+                "     .XrangeAdd \"0.0\", \"0.0\"",
+                "     .YrangeAdd \"0.0\", \"0.0\"",
+                "     .ZrangeAdd \"0.0\", \"0.0\"",
+                "     .SingleEnded \"False\"",
+                "     .WaveguideMonitor \"False\"",
+                "     .Create ",
+                "End With"
+            ]
+        },
+        {
+            "caption": "define time domain solver parameters",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Mesh.SetCreator \"High Frequency\" ",
+                "",
+                "With Solver ",
+                "     .Method \"Hexahedral\"",
+                "     .CalculationType \"TD-S\"",
+                "     .StimulationPort \"All\"",
+                "     .StimulationMode \"All\"",
+                "     .SteadyStateLimit \"-40\"",
+                "     .MeshAdaption \"False\"",
+                "     .AutoNormImpedance \"False\"",
+                "     .NormingImpedance \"50\"",
+                "     .CalculateModesOnly \"False\"",
+                "     .SParaSymmetry \"False\"",
+                "     .StoreTDResultsInCache  \"False\"",
+                "     .RunDiscretizerOnly \"False\"",
+                "     .FullDeembedding \"False\"",
+                "     .SuperimposePLWExcitation \"False\"",
+                "     .UseSensitivityAnalysis \"False\"",
+                "End With"
+            ]
+        },
+        {
+            "caption": "set PBA version",
+            "version": "2024.5|33.0.1|20240614",
+            "hidden": false,
+            "type": "vba",
+            "code": [
+                "Discretizer.PBAVersion \"2024061424\""
+            ]
+        }
+    ]
+}

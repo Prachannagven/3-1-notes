@@ -1,0 +1,132 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\geometry{margin=1in}
+
+\begin{document}
+
+\begin{center}
+\Large\textbf{EXPERIMENT NO. 7}\\[0.5em]
+\large\textbf{STUDY OF H-PLANE AND E-PLANE TEE CHARACTERISTICS}\\[1em]
+\end{center}
+
+\noindent
+\textbf{Date:} 28/10/2025\\
+\textbf{Group No.:} 1\\[0.5em]
+\textbf{Name:} Pranav Chandra Nagulakonda Venkat \hfill \textbf{ID No:} 2023AAPS0013P\\
+\textbf{Name:} Het Ronak Shah \hfill \textbf{ID No:} 2023AAPS0746P\\
+\textbf{Name:} Hitesh Chotwani \hfill \textbf{ID No:} 2022B4AA1063P\\
+\textbf{Name:} Adhyayan Berlia \hfill \textbf{ID No:} 2023AAPS0767P\\
+\textbf{Name:} Jayaditya Singh \hfill \textbf{ID No:} 2022B4AA0739P\\[1em]
+
+\noindent
+\textbf{Aim:} To study the characteristics of the E-plane and H-plane Tee.\\[0.5em]
+\textbf{Software:} CST Studio\\[1em]
+
+\section*{Theory}
+
+In electromagnetic radiation, there are always two components: the electric field (E-field) and the magnetic field (H-field). The orientation and variation of these fields define the mode of propagation. This property can be leveraged to split a wave into its constituent E and H components.
+
+The E-plane and H-plane Tees are useful for this purpose. Because the E and H planes are oriented $90^\circ$ apart, they can be separated using appropriately designed Tee junctions. The E-field typically propagates along the YZ-plane, while the H-field propagates along the XZ-plane. Accordingly, Tee waveguides are constructed to isolate each field.
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{E-Plane (left) and H-Plane (right) Tee}
+\end{figure}
+
+The output wave for an E-plane Tee is in phase with the input, while that of an H-plane Tee is $90^\circ$ out of phase. This property is verified during the simulation.
+
+\section*{Results}
+
+We begin by modeling the E-plane and H-plane Tees in CST Studio.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{E-Plane Tee}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{Sectional View of H-Plane Tee}
+\end{figure}
+
+Waveguides are then attached to the various ports of the Tees, allowing clear identification of inputs and outputs.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{Waveguides added to the E-Plane Tee}
+\end{figure}
+
+Next, an input wave is provided from Port 1, and outputs are observed at the other ports. The electric field distribution within the Tees is then visualized.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{Electric Field Distribution in H-Plane Tee}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{Electric Field Distribution in E-Plane Tee}
+\end{figure}
+
+The magnetic field distributions also show interesting characteristics.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{H-Field in E-Plane Tee}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{H-Field in H-Plane Tee}
+\end{figure}
+
+The electric and magnetic field distributions demonstrate the expected behavior and directionality for the E and H planes.
+
+\section*{Scattering Parameters}
+
+For the Tees, two key characteristics are studied:
+\begin{enumerate}
+    \item Self-reflection parameters (e.g., $S_{11}$)
+    \item Transmission (gain) parameters (e.g., $S_{12}$, $S_{23}$)
+\end{enumerate}
+
+In the E-plane Tee, the self-reflection parameter initially exhibits high transmission but increases sharply after the cutoff frequency.
+
+Gain parameters show a similar trend. To verify the phase relationship, phase plots of $S_{12}$ and $S_{23}$ are examined.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{draft-image}
+    \caption{Phase Plot for H-Plane Tee at 10 GHz}
+\end{figure}
+
+At 10 GHz, the H-plane Tee outputs are in phase, confirming theoretical expectations. The E-plane Tee, however, shows a $180^\circ$ phase difference between outputs — again in agreement with theory.
+
+\section*{Conclusions}
+
+The simulations and phase plots confirm that both E-plane and H-plane Tees operate as expected. The phase difference of $180^\circ$ for the E-plane and $0^\circ$ for the H-plane was verified.  
+This validates the working of the Tees and demonstrates the feasibility of combining them to implement a Magic Tee.  
+
+As long as the input frequency exceeds the cutoff frequency, the Tees perform efficiently, with predictable phase and power characteristics.
+
+\vfill
+\noindent\rule{\textwidth}{0.4pt}\\
+\textit{Microwave Engineering Lab Manual, EEE Dept., BITS Pilani – Pilani Campus}\\
+\textit{Page - 27}\\
+\noindent\rule{\textwidth}{0.4pt}
+
+\end{document}
+
