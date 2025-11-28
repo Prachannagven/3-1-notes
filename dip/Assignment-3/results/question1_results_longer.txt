@@ -1,0 +1,128 @@
+INPUT STRING: INKYPINKYPONKYPONKYPINKYINKYNKYPONKY
+Original bits = 288
+
+===================== LZ77 TOKENS =====================
+(0, 0, 'I')
+(0, 0, 'N')
+(0, 0, 'K')
+(0, 0, 'Y')
+(0, 0, 'P')
+(5, 4, 'P')
+(0, 0, 'O')
+(5, 4, 'O')
+(5, 4, 'I')
+(5, 3, 'I')
+(4, 3, 'N')
+(3, 2, 'P')
+(0, 0, 'O')
+(5, 3, EOF)
+
+=== LZ77 BIT STATISTICS ===
+Original bits:   288
+Compressed bits: 188
+Compression ratio: 1.532
+
+===================== LZ78 (Pairs Only) =====================
+
+DICTIONARY (not transmitted):
+  0 -> 
+  1 -> I
+  2 -> N
+  3 -> K
+  4 -> Y
+  5 -> P
+  6 -> IN
+  7 -> KY
+  8 -> PO
+  9 -> NK
+ 10 -> YP
+ 11 -> O
+ 12 -> NKY
+ 13 -> PI
+ 14 -> NKYI
+ 15 -> NKYN
+ 16 -> KYP
+ 17 -> ON
+ 18 -> KY
+
+PAIRS (transmitted):
+(0, 'I')
+(0, 'N')
+(0, 'K')
+(0, 'Y')
+(0, 'P')
+(1, 'N')
+(3, 'Y')
+(5, 'O')
+(2, 'K')
+(4, 'P')
+(0, 'O')
+(9, 'Y')
+(5, 'I')
+(12, 'I')
+(12, 'N')
+(7, 'P')
+(11, 'N')
+(7, EOF)
+
+=== LZ78 BIT STATISTICS (Pairs Only) ===
+Original bits:   288
+Compressed bits: 208
+Compression ratio: 1.385
+
+===================== LZW TRIPLETS =====================
+(1 , 'I' , 'N')
+(2 , 'N' , 'K')
+(3 , 'K' , 'Y')
+(4 , 'Y' , 'P')
+(5 , 'P' , 'I')
+(7 , 'IN' , 'K')
+(9 , 'KY' , 'P')
+(5 , 'P' , 'O')
+(6 , 'O' , 'N')
+(8 , 'NK' , 'Y')
+(10 , 'YP' , 'O')
+(15 , 'ON' , 'K')
+(13 , 'KYP' , 'I')
+(12 , 'INK' , 'Y')
+(4 , 'Y' , 'I')
+(20 , 'INKY' , 'N')
+(16 , 'NKY' , 'P')
+(14 , 'PO' , 'N')
+(16 , 'NKY' , 'EOF')
+
+=== LZW CODE STREAM ===
+     1     2     3     4     5     7     9     5     6     8    10    15    13    12     4    20    16    14    16
+
+
+=== LZW BIT STATISTICS ===
+Dictionary bits: 48
+Code stream:     95
+Total bits:      143
+Compression ratio: 2.014
+
+=== LZW DICTIONARY (code → string) ===
+  1 → I
+  2 → N
+  3 → K
+  4 → Y
+  5 → P
+  6 → O
+  7 → IN
+  8 → NK
+  9 → KY
+ 10 → YP
+ 11 → PI
+ 12 → INK
+ 13 → KYP
+ 14 → PO
+ 15 → ON
+ 16 → NKY
+ 17 → YPO
+ 18 → ONK
+ 19 → KYPI
+ 20 → INKY
+ 21 → YI
+ 22 → INKYN
+ 23 → NKYP
+ 24 → PON

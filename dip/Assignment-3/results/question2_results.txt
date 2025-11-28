@@ -1,0 +1,30 @@
+====================== Processing Image 1 Grayscale ======================
+BTC     CR = 5.640 | MSE = 1.26 | PSNR = 46.86 dB
+DPCM    CR = 2.000 | MSE = 9.08 | PSNR = 38.51 dB
+DWT     CR = 4.008 | MSE = 17.51 | PSNR = 35.67 dB
+
+====================== Processing Image 1 Binary ======================
+BTC     CR = 6.311 | MSE = 0.14 | PSNR = 56.53 dB
+DPCM    CR = 1.600 | MSE = 0.17 | PSNR = 55.79 dB
+DWT     CR = 7.627 | MSE = 288.91 | PSNR = 23.52 dB
+
+====================== Processing Image 2 Grayscale ======================
+BTC     CR = 4.970 | MSE = 0.87 | PSNR = 48.38 dB
+DPCM    CR = 2.000 | MSE = 15.58 | PSNR = 36.19 dB
+DWT     CR = 4.002 | MSE = 39.88 | PSNR = 32.12 dB
+
+====================== Processing Image 2 Binary ======================
+BTC     CR = 3.504 | MSE = 0.30 | PSNR = 53.12 dB
+DPCM    CR = 1.600 | MSE = 0.26 | PSNR = 53.86 dB
+DWT     CR = 6.469 | MSE = 463.52 | PSNR = 21.47 dB
+
+====================== FINAL SUMMARY TABLE ======================
+Image                  | BTC_CR   | BTC_PSNR | DPCM_CR  | DPCM_PSNR | DWT_CR   | DWT_PSNR
+------------------------------------------------------------------------------------------
+Image 1 Grayscale      |    5.640 |    46.86 |    2.000 |    38.51 |    4.008 |    35.67
+Image 1 Binary         |    6.311 |    56.53 |    1.600 |    55.79 |    7.627 |    23.52
+Image 2 Grayscale      |    4.970 |    48.38 |    2.000 |    36.19 |    4.002 |    32.12
+Image 2 Binary         |    3.504 |    53.12 |    1.600 |    53.86 |    6.469 |    21.47
+=================================================================
+
+Saved all output images to folder: compressed_outputs
