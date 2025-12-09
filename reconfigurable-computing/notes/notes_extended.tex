@@ -1,0 +1,264 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{caption}
+\usepackage{bookmark}
+
+\title{Reconfigurable Computing --- Post Mid-Semester Lecture Notes (Lectures 19--26)\\
+\large Expanded with external literature}
+\author{Based on course slides by Dr.~Meetha V.~Shenoy\\Added references: routing, PUFs, hardware Trojan, CGRA}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 19: FPGA Routing and Architecture}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Overview of FPGA CAD Flow}
+According to the flow diagram shown in the slides
+(Design Entry $\rightarrow$ Synthesis $\rightarrow$ Logic Optimization $\rightarrow$ Mapping to k-LUT
+$\rightarrow$ Packing LUTs to CLBs $\rightarrow$ Placement $\rightarrow$ Routing $\rightarrow$ Simulation
+$\rightarrow$ Configuration)
+the FPGA compilation process proceeds through the usual EDA steps (synthesis, tech-mapping, placement, routing). The course slides provide a compact workflow diagram and discussion of placement \& routing stages. :contentReference[oaicite:5]{index=5}
+
+\subsection{Island-Style FPGA Architecture}
+Island-style FPGAs are organized as a 2-D array of logic blocks (CLBs) with horizontal and vertical routing channels. Connection boxes link CLB pins to channel wires and switch boxes connect channel wires. This is illustrated in the course slides (island-style figure). :contentReference[oaicite:6]{index=6}
+
+\subsection{Switchbox Topologies and Trade-offs}
+Switch box design is a major architecture decision. Common topologies:
+\begin{itemize}
+  \item \textbf{Subset / Planar switch boxes:} connect track $i$ to track $i$ only (cheap, area-efficient).
+  \item \textbf{Wilton switch boxes:} a permuted mapping that improves routability for certain designs.
+  \item \textbf{Universal switch boxes:} full connectivity between domains (best routability, large area).
+\end{itemize}
+Studies comparing these topologies show Wilton often achieves a good routability/area trade-off, while universal boxes provide highest routability at area cost. See formal evaluations and layout analyses for details. :contentReference[oaicite:7]{index=7}
+
+\subsubsection*{Design parameter: Connection flexibility ($F_c$)}
+The connection flexibility $F_c$ measures how many track wires a CLB pin can connect to. Increasing $F_c$ improves routing success probability for dense nets but raises area and bitstream complexity. The course slides highlight this parameter in the context of connection boxes. :contentReference[oaicite:8]{index=8}
+
+\subsection{Routing as a Graph Problem}
+Routing is modeled as a graph; nodes represent pins, wire segments, and switches. Routing must avoid obstacles (occupied resources) and optimize cost metrics (wirelength, delay, congestion). Practical routers use multi-stage approaches (global routing followed by detailed routing). The slides give a pedagogical description of these phases. :contentReference[oaicite:9]{index=9}
+
+\subsection{Pathfinder: Negotiation-Based Router}
+One of the canonical FPGA routers is the \textbf{Pathfinder} algorithm: it performs initial shortest-path routing and then iteratively negotiates congestion by raising the cost of overused resources and rerouting nets. This negotiation-based approach balances routability and performance; further studies have refined and revisited details of PathFinder to reduce delay variability and improve convergence. The original PathFinder paper is the foundational description, and later analysis (e.g., quantifying delay noise and tuning `pressure` factors) provides practical guidance for tool tuning. :contentReference[oaicite:10]{index=10}
+
+\paragraph{Practical implications for FPGA design}
+\begin{itemize}
+  \item Long, wide buses and high-fanout nets often require manual floorplanning or constraints to avoid catastrophic routing congestion.
+  \item Synthesis choices (logic duplication, buffer insertion) affect routability and timing closure.
+\end{itemize}
+
+\subsection{Maze / BFS / Dijkstra Variant Routers}
+Detail-level routing often uses BFS-like expansion (maze routing) with cost heuristics (distance, congestion). These methods are used inside PathFinder iterations or as parts of other router designs. The tutorial on FPGA routing provides a clear, actionable description of domain negotiation and DFS/BFS strategies to find legal routes in subset switch boxes. :contentReference[oaicite:11]{index=11}
+
+\subsection{Recent Research Directions}
+Current research looks at:
+\begin{itemize}
+  \item SAT-based and ILP approaches to embed complex nets and accelerate routing quality for specific fabrics. :contentReference[oaicite:12]{index=12}
+  \item Improved switch box designs (turn-restricted, grouped routing), which trade area, delay, and ease-of-routing. :contentReference[oaicite:13]{index=13}
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 20: ZedBoard, Zynq SoC and JTAG}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{ZedBoard and Zynq Recap}
+ZedBoard pairs a PS (dual-core ARM Cortex-A9) with PL (Artix-7 fabric). PS–PL communication is via AXI interconnects; typical flows use ARM to offload compute kernels to PL using AXI-Stream/MM interfaces. See course slides for labeled connectors and board programming options (USB-JTAG, SPI flash, SD). :contentReference[oaicite:14]{index=14}
+
+\subsection{Boundary-Scan (IEEE 1149.1) and JTAG}
+Boundary-scan cells create a serial chain around I/O pins and allow several test modes: EXTEST, INTEST, BYPASS. TAP signals (TCK, TMS, TDI, TDO, optional TRST) control the finite-state TAP controller. Slides illustrate wrapper architecture and common test modes. :contentReference[oaicite:15]{index=15}
+
+\subsection{Secure Considerations for JTAG}
+Because JTAG provides low-level access, production systems often disable or protect JTAG (via fuses or secure configuration) to prevent extraction of sensitive bitstreams or runtime introspection.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 21–22: FPGA Security (Expanded)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Supply-Chain Threats and Attack Vectors}
+FPGA-based systems are vulnerable across the supply chain: foundries, IP vendors, EDA tools, integrators, and field updates all introduce trust boundaries. The slides describe cloning, replay attacks, and backdoors. We add structured threat classes:
+\begin{itemize}
+  \item \textbf{Bitstream theft / cloning:} attackers copy the bitstream from flash or during programming flows.
+  \item \textbf{Hardware Trojans:} malicious modifications inserted at RTL, netlist, or GDSII level.
+  \item \textbf{Backdoors / Malicious IP:} vendor IP with hidden interfaces or covert channels.
+  \item \textbf{Replay / rollback attacks:} reprogramming older bitstreams to re-enable known vulnerabilities.
+  \item \textbf{Reverse engineering / side-channels:} extracting secrets via power, EM, or physical attacks. 
+\end{itemize}
+
+\subsection{Hardware Trojan Taxonomy and Detection}
+A canonical taxonomy partitions Trojans by:
+\begin{itemize}
+  \item \textbf{Insertion stage:} design-time, integration, or fabrication.
+  \item \textbf{Trigger:} input pattern, time-based, sensor-based, rare event.
+  \item \textbf{Payload:} leak, disable, degrade, or change functionality.
+\end{itemize}
+Detection methods include structural analysis, logic testing, side-channel analysis (power/EM), formal methods, and runtime monitoring. Standard surveys and reviews compile and evaluate these techniques—useful references summarize detection capabilities and limitations. :contentReference[oaicite:17]{index=17}
+
+\subsection{PUFs (Physically Unclonable Functions)}
+PUFs exploit manufacturing variability to produce a device-unique response to challenges (challenge-response pairs, CRPs). Two common PUF families:
+\begin{itemize}
+  \item \textbf{Ring-oscillator PUFs (RO-PUF):} compare frequencies of oscillator pairs to produce bits.
+  \item \textbf{Arbiter PUFs:} race paths through multiplexers producing a stable 0/1 depending on path delay differences.
+\end{itemize}
+Important performance metrics:
+\begin{itemize}
+  \item \textbf{Uniqueness:} inter-device Hamming distance (ideal $\approx 50\%$).
+  \item \textbf{Reliability / stability:} intra-device consistency across temperature/voltage.
+  \item \textbf{Entropy / CRP space:} scalability of secure challenge–response pairs.
+\end{itemize}
+Reviews provide experimental data and robustness techniques (helper data, fuzzy extractors) to convert noisy PUF outputs into stable keys. RO-PUFs are practical in FPGAs but often require calibration/conditioning for robust operation. :contentReference[oaicite:18]{index=18}
+
+\subsection{Secure Boot and Bitstream Authentication}
+Best practices:
+\begin{itemize}
+  \item Use signature verification during boot (image signed by vendor key; device verifies using public key in ROM/fuses).
+  \item Encrypt bitstreams in storage and use on-chip key material (PUFs or secure fuses) for decryption.
+  \item Include monotonic counters or versioning to prevent rollback/replay. :contentReference[oaicite:19]{index=19}
+\end{itemize}
+
+\subsection{Design-time Defenses}
+\begin{itemize}
+  \item IP vetting and provenance: prefer vetted open-source IP or signed vendor IP.
+  \item Formal verification and equivalence checking between RTL and netlist.
+  \item Runtime monitors (watchdogs and integrity checks).
+\end{itemize}
+Surveys recommend combining multiple detection/mitigation layers for stronger coverage. :contentReference[oaicite:20]{index=20}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 23: Coarse-Grained Reconfigurable Architectures (CGRA) — Expanded}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{CGRA Recap}
+CGRA is a mid-point between CPUs and FPGAs: arrays of PEs with reconfigurable interconnect provide operation-level reconfiguration (ALU/MAC units as building blocks). They accelerate kernels with regular dataflow, while reducing compilation complexity compared to bit-level FPGA design. Course slides summarize PE arrays, context memories, and host controllers. :contentReference[oaicite:21]{index=21}
+
+\subsection{Architectural Design Choices and Trade-offs}
+Key design axes for CGRAs:
+\begin{itemize}
+  \item \textbf{PE complexity:} simple ALUs vs richer arithmetic units.
+  \item \textbf{Interconnect topology:} nearest-neighbor (cheap, local), crossbars (flexible, expensive), or hybrid augmented networks.
+  \item \textbf{Context memory and reconfiguration granularity:} per-PE contexts vs block-level contexts.
+  \item \textbf{Compiler support:} mapping high-level loops to the PE array efficiently is essential.
+\end{itemize}
+Surveys highlight that CGRA efficiency depends strongly on compiler technology and data-movement optimizations. :contentReference[oaicite:22]{index=22}
+
+\subsection{Use-cases and Examples}
+\begin{itemize}
+  \item DSP pipelines (FIR, convolution).
+  \item CNN inference accelerators (when integer/low-precision ops dominate).
+  \item Stream processing where dataflow is statically known.
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lectures 24--26: Configurable Logic Block (CLB) Architecture — Expanded}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{CLB and Slice Recap}
+Modern 7-series FPGA slices contain:
+\begin{itemize}
+  \item Four LUTs (LUT6 primitives or pairable LUT5s).
+  \item Eight flip-flops.
+  \item Carry logic (fast chains).
+  \item Wide multiplexers and optional LUTRAM/SRL in SLICEM. Slides show diagrams of SLICEM vs SLICEL internals. 
+\end{itemize}
+
+\subsection{LUT-as-RAM and SRLs}
+\begin{itemize}
+  \item \textbf{Distributed RAM (LUTRAM):} small, low-latency memories implemented in SLICEM LUTs.
+  \item \textbf{SRL32 / SRLC32E:} LUT configured as a 32-bit deep shift register with an addressable tap. Cascading yields deeper delays (up to 128 cycles per SLICEM with four LUTs). These primitives are invaluable for FIFOs, line buffers, and small delays without consuming BRAM. 
+\end{itemize}
+
+\subsection{Block RAM (BRAM) vs Distributed RAM Trade-offs}
+\begin{itemize}
+  \item BRAM: large capacity, synchronous read/write, good for frame buffers and large FIFOs.
+  \item Distributed RAM (LUTRAM): small capacity, asynchronous reads possible, located near logic — good for small tables, coefficients, and low-latency accesses.
+\end{itemize}
+Tables in the slides summarize relative capacities and use-cases; designers choose based on width/depth and latency needs. :contentReference[oaicite:25]{index=25}
+
+\subsection{Carry Chains and Fast Arithmetic}
+Dedicated carry logic (CARRY4 blocks) enables very fast adders and accumulation trees; use carry-aware synthesis to leverage these primitives for area and timing improvements. Slides show how LUT outputs feed carry logic for optimized adders. :contentReference[oaicite:26]{index=26}
+
+\subsection{Pipelining and Throughput-Optimized Design}
+Design guidelines:
+\begin{itemize}
+  \item Pipeline across DSPs, LUT logic, and BRAM interfaces to meet target clock.
+  \item Balance pipeline stages to minimize latency and maximize throughput.
+  \item Use HLS pragmas or RTL pipeline insertion for loop pipelining and II reduction.
+\end{itemize}
+Slides include an example pipeline for a multiply-add expression and discuss initiation interval and latency concepts. :contentReference[oaicite:27]{index=27}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 26 Addendum: Implementing 3×3 Convolution on FPGA (Expanded)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Problem and Resource Mapping}
+For a 28×28 grayscale image and 3×3 kernel:
+\begin{itemize}
+  \item Use BRAM for line buffers (store rows).
+  \item Use SRL32 for sliding-window shift registers per row to stream pixels cheaply.
+  \item Use DSP48E1 for 9 parallel multiplications per output; if DSP count limited, time-multiplex DSPs.
+  \item Use carry-chain adders for partial and final accumulation.
+\end{itemize}
+The slide set presents a stage-by-stage pipeline; the extended notes emphasize memory-bank schemes and resource-time trade-offs. :contentReference[oaicite:28]{index=28}
+
+\subsection{Throughput and Latency}
+\begin{itemize}
+  \item With full spatial parallelism (9 multipliers per cycle), throughput = 1 output pixel / cycle (after pipeline fill).
+  \item If multipliers are time-multiplexed, throughput reduces proportionally.
+  \item Memory bandwidth (to/from BRAM or DRAM) can become the bottleneck; use burst transfers and wide ports to maximize utilization.
+\end{itemize}
+
+\subsection{Quantization and Fixed-Point Design}
+When mapping to FPGA, quantize coefficients and intermediate results to fixed-point representation. Choose bit-widths after range analysis and simulate for accuracy vs resource trade-off (DSP width and BRAM depth). Use shift-and-add or DSP pre-adder features for efficient multiplies. :contentReference[oaicite:29]{index=29}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{References}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% File citations (course slides)
+Slides (uploaded course material):
+\begin{itemize}
+  \item Lecture 19 slides (FPGA routing, architecture). :contentReference[oaicite:30]{index=30}
+  \item Lecture 20 slides (ZedBoard \& JTAG). :contentReference[oaicite:31]{index=31}
+  \item Lecture 21 slides (Security Part 1 — PUF, Trojans). :contentReference[oaicite:32]{index=32}
+  \item Lecture 22 slides (Security Part 2 — obfuscation, tamper). :contentReference[oaicite:33]{index=33}
+  \item Lecture 23 slides (CGRA). :contentReference[oaicite:34]{index=34}
+  \item Lecture 24 slides (CLB Part 1). :contentReference[oaicite:35]{index=35}
+  \item Lecture 25 slides (CLB Part 2). :contentReference[oaicite:36]{index=36}
+  \item Lecture 26 slides (CLB Part 3 \& convolution example). :contentReference[oaicite:37]{index=37}
+\end{itemize}
+
+% Web citations (external literature)
+Selected external literature referenced in these expanded notes:
+\begin{itemize}
+  \item PathFinder: W. Kong and others, \emph{PathFinder: a negotiation-based performance-driven router}, ACM/IEEE (canonical reference). :contentReference[oaicite:38]{index=38}
+  \item FPGA routing tutorial and switch-box analysis (survey/tutorial). :contentReference[oaicite:39]{index=39}
+  \item Quantifying delay noise and tuning PathFinder (analysis of VPR/PathFinder). :contentReference[oaicite:40]{index=40}
+  \item PUF review: review paper covering RO-, SRAM-, arbiter-PUFs, and metrics. :contentReference[oaicite:41]{index=41}
+  \item RO-PUF recent robustness work and variants. :contentReference[oaicite:42]{index=42}
+  \item Hardware Trojan taxonomy and detection surveys (Tehranipoor \& Koushanfar and related surveys). :contentReference[oaicite:43]{index=43}
+  \item CGRA surveys and architecture overviews (ADRES and other templates). :contentReference[oaicite:44]{index=44}
+  \item Switch-box layout and SAT/Switch comparisons (subset, Wilton, universal). :contentReference[oaicite:45]{index=45}
+\end{itemize}
+
+\end{document}
+

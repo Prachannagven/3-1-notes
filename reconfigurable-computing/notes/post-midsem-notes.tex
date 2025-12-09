@@ -1,0 +1,385 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Reconfigurable Computing --- Post Mid-Semester Lecture Notes (Lectures 19--26)}
+\author{Based on course slides by Dr.~Meetha V.~Shenoy}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 19: FPGA Routing and Architecture}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Overview of FPGA CAD Flow}
+According to the flow diagram shown in the slides
+(Design Entry $\rightarrow$ Synthesis $\rightarrow$ Logic Optimization $\rightarrow$ Mapping to k-LUT
+$\rightarrow$ Packing LUTs to CLBs $\rightarrow$ Placement $\rightarrow$ Routing $\rightarrow$ Simulation
+$\rightarrow$ Configuration)
+:contentReference[oaicite:1]{index=1}, the FPGA compilation process proceeds through the following steps:
+
+\begin{enumerate}
+    \item \textbf{Design Entry}: HDL / schematic input.
+    \item \textbf{Synthesis}: Converts HDL to gate-level netlist.
+    \item \textbf{Logic Optimization}.
+    \item \textbf{Technology Mapping}: Map to k-input LUTs.
+    \item \textbf{Packing}: Pack LUTs into CLBs.
+    \item \textbf{Placement}: Assign CLBs to FPGA grid.
+    \item \textbf{Routing}: Connect all placed blocks using routing fabric.
+    \item \textbf{Bitstream Generation}.
+\end{enumerate}
+
+\subsection{Island-Style FPGA Architecture}
+The slides depict an island-style FPGA (logic blocks surrounded by routing channels and switch boxes)
+:contentReference[oaicite:2]{index=2}.
+
+\begin{itemize}
+    \item \textbf{Logic Blocks (L)} implement combinational/sequential logic.
+    \item \textbf{Connection Boxes (C)} connect CLB pins to routing tracks.
+    \item \textbf{Switch Boxes (S)} connect routing tracks to each other.
+\end{itemize}
+
+\subsection{Connection Block Flexibility}
+The connection block has a parameter:
+\[
+F_c = \text{number of routing tracks each CLB pin may connect to}
+\]
+Higher $F_c$ increases routability but increases area. :contentReference[oaicite:3]{index=3}
+
+\subsection{Switch Box Types}
+Switch boxes connect horizontal and vertical tracks. Two major types shown in the slides are
+:contentReference[oaicite:4]{index=4}:
+\begin{itemize}
+    \item \textbf{Planar / Subset switch box}: Only maps track $i$ to track $i$ (0--0, 1--1).
+    \item \textbf{Wilton switch box}: Permits permutation across domains (0--3, 1--2, etc.).
+\end{itemize}
+
+\subsection{Routing as a Grid Graph}
+Slides describe routing as a graph where:
+\begin{itemize}
+    \item Nodes = switches, pins, wire segments.
+    \item Obstacles = used routing resources.
+    \item Cost = wirelength + congestion + timing. :contentReference[oaicite:5]{index=5}
+\end{itemize}
+
+\subsection{Maze Routing Algorithm}
+A BFS/Dijkstra style expansion is used:
+\begin{enumerate}
+    \item Initialize grid.
+    \item Expand wave from source.
+    \item When destination reached, backtrack.
+    \item Optimize for congestion/timing. :contentReference[oaicite:6]{index=6}
+\end{enumerate}
+
+\subsection{Global vs Detailed Routing}
+\begin{itemize}
+    \item \textbf{Global routing}: Choose coarse path (which channels).
+    \item \textbf{Detailed routing}: Assign specific tracks and switches. :contentReference[oaicite:7]{index=7}
+\end{itemize}
+
+\subsection{Pathfinder Algorithm}
+Iterative negotiated routing:
+\begin{enumerate}
+    \item Initial shortest‐path routing.
+    \item Compute congestion.
+    \item Increase cost of overused wires.
+    \item Rip-up and reroute.
+    \item Iterate until convergence. :contentReference[oaicite:8]{index=8}
+\end{enumerate}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 20: ZedBoard, Zynq SoC and JTAG}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{ZedBoard Overview}
+Slides provide a labeled diagram of the ZedBoard main components
+(USB-JTAG, USB-UART, GPIO, HDMI, Ethernet, Memory interfaces)
+:contentReference[oaicite:9]{index=9}.
+
+\subsection{Zynq-7000 Architecture}
+Zynq integrates:
+\begin{itemize}
+    \item \textbf{Processing System (PS)}: Dual-core ARM Cortex-A9.
+    \item \textbf{Programmable Logic (PL)}: Artix-7 FPGA fabric.
+    \item \textbf{AXI Interconnect}: Communication between PS and PL. :contentReference[oaicite:10]{index=10}
+\end{itemize}
+
+\subsection{JTAG and IEEE 1149.1}
+The wrapper architecture figure shows boundary scan cells around the internal logic
+:contentReference[oaicite:11]{index=11}.
+
+\subsubsection*{Mandatory pins}
+\begin{itemize}
+    \item TCK, TMS, TDI, TDO, optional TRST. :contentReference[oaicite:12]{index=12}
+\end{itemize}
+
+\subsection{JTAG Instructions}
+\begin{itemize}
+    \item \textbf{EXTEST}: Tests external connections (figure in slides).
+    \item \textbf{BYPASS}: 1-bit bypass register.
+    \item \textbf{INTEST}: Test internal logic. :contentReference[oaicite:13]{index=13}
+\end{itemize}
+
+\subsection{Programming Methods}
+ZedBoard supports programming via:
+\begin{enumerate}
+    \item USB-JTAG (default).
+    \item JTAG header.
+    \item SPI Flash.
+    \item SD Card. :contentReference[oaicite:14]{index=14}
+\end{enumerate}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 21: Security of FPGA-Based Systems (Part 1)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Supply Chain Model}
+Slides show interactions between foundries, FPGA vendors, system developers, IP vendors, end users
+:contentReference[oaicite:15]{index=15}.
+
+\subsection{Threat: Cloning}
+FPGAs load bitstreams from external flash; attacker can read this bitstream and reprogram unauthorized devices
+:contentReference[oaicite:16]{index=16}.
+
+\subsection{Identification: Friend or Foe}
+Authentication protocol:
+\begin{enumerate}
+    \item FPGA sends challenge $C$ to EEPROM.
+    \item EEPROM computes $\mathrm{Hash}(K_{\text{EEPROM}}, C)$.
+    \item FPGA computes $\mathrm{Hash}(K_{\text{FPGA}}, C)$.
+    \item If match $\Rightarrow$ valid device. :contentReference[oaicite:17]{index=17}
+\end{enumerate}
+
+\subsection{Physically Unclonable Functions (PUFs)}
+Key points from the slides:
+\begin{itemize}
+    \item Ring oscillators differ due to manufacturing variations.
+    \item Frequency differences yield unique response bits.
+    \item Multiple challenges produce a device fingerprint. :contentReference[oaicite:18]{index=18}
+\end{itemize}
+
+\subsection{Hardware Trojans}
+A malicious modification consisting of:
+\begin{itemize}
+    \item \textbf{Trigger}: Rare conditions.
+    \item \textbf{Payload}: Key leakage, disabling chip, reduced performance. :contentReference[oaicite:19]{index=19}
+\end{itemize}
+
+\subsection{Backdoor Communication}
+Unauthorized hidden channels inside FPGA IP blocks. :contentReference[oaicite:20]{index=20}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 22: Security of FPGA-Based Systems (Part 2)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Replay Attacks}
+Attacker replays an older bitstream version to exploit vulnerabilities
+:contentReference[oaicite:21]{index=21}.
+
+PUF-based license generation:
+\[
+\text{License}_1 = f(R, \text{Version}, \text{Secret})
+\]
+Bitstream executes only when PUF-derived license matches. :contentReference[oaicite:22]{index=22}
+
+\subsection{Secure Boot}
+Slides illustrate standard secure-boot flow:
+\begin{itemize}
+    \item Host signs image.
+    \item Device verifies signature using public key in fuses. :contentReference[oaicite:23]{index=23}
+\end{itemize}
+
+\subsection{Reverse Engineering of ASICs}
+Uses delayering, SEM imaging, and X-ray tomography to restore netlists. :contentReference[oaicite:24]{index=24}
+
+\subsection{IC Camouflage}
+Gates that appear identical physically but behave differently. :contentReference[oaicite:25]{index=25}
+
+\subsection{Logic Obfuscation}
+Insert key-dependent gates; wrong keys produce incorrect behavior. :contentReference[oaicite:26]{index=26}
+
+\subsection{Tamper Detection}
+Secure FPGAs include:
+\begin{itemize}
+    \item Light sensors.
+    \item Switches.
+    \item Vibration detectors.
+    \item Zeroization of secrets when triggered. :contentReference[oaicite:27]{index=27}
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 23: Coarse-Grained Reconfigurable Architectures (CGRAs)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{CGRA Structure}
+Slides depict Processing Element (PE) arrays, register files, configuration memories, host processor
+:contentReference[oaicite:28]{index=28}.
+
+\subsection{Processing Elements}
+Each PE contains:
+\begin{itemize}
+    \item ALU + shifter.
+    \item Local register file.
+    \item Shared register for neighbor communication. :contentReference[oaicite:29]{index=29}
+\end{itemize}
+
+\subsection{Execution Controller}
+Controls:
+\begin{itemize}
+    \item PE activation schedule.
+    \item Context switching.
+    \item Pipeline start/stop.
+    \item Synchronization. :contentReference[oaicite:30]{index=30}
+\end{itemize}
+
+\subsection{CGRAs vs FPGAs}
+\begin{itemize}
+    \item FPGA: logic-level programming.
+    \item CGRA: operation-level programming (dataflow-like). :contentReference[oaicite:31]{index=31}
+\end{itemize}
+
+\subsection{Interconnect Types}
+\begin{enumerate}
+    \item \textbf{Nearest Neighbor}.  
+    \item \textbf{Next-Hop / Flexible Switchbox}.  
+    \item \textbf{Bus-Based Interconnect}.  
+    \item \textbf{Augmented Interconnect}. :contentReference[oaicite:32]{index=32}
+\end{enumerate}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 24--26: Configurable Logic Block (CLB) Architecture}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{CLB Structure}
+Slides show:
+\begin{itemize}
+    \item 1 CLB = 2 slices.
+    \item Each slice = 4 LUTs + 8 FFs + carry chain + multiplexers. :contentReference[oaicite:33]{index=33}
+\end{itemize}
+
+There are two slice types:
+\begin{itemize}
+    \item \textbf{SLICEM}: supports distributed RAM + SRL.
+    \item \textbf{SLICEL}: logic only. :contentReference[oaicite:34]{index=34}
+\end{itemize}
+
+\subsection{LUT Functionality}
+\begin{itemize}
+    \item 6-input LUT with output $O_6$.
+    \item Can act as two 5-input LUTs using $O_5$. :contentReference[oaicite:35]{index=35}
+\end{itemize}
+
+\subsection{LUTs as Multiplexers}
+Slides illustrate 4:1, 8:1, and 16:1 multiplexer construction using LUTs  
+:contentReference[oaicite:36]{index=36}.
+
+\subsection{Storage Elements}
+\begin{itemize}
+    \item Each LUT output feeds optional FF.
+    \item Total: 8 FFs per slice. :contentReference[oaicite:37]{index=37}
+\end{itemize}
+
+\subsection{Distributed RAM}
+Available only in SLICEM. Good for:
+\begin{itemize}
+    \item Small tables.
+    \item Coefficients.
+    \item Low-latency lookup. :contentReference[oaicite:38]{index=38}
+\end{itemize}
+
+\subsection{Shift Register LUTs (SRLs)}
+\subsubsection*{SRL32}
+A LUT can become a 32-bit shift register:
+\begin{itemize}
+    \item Depth = 1–32.
+    \item Address lines A[4:0] select tap.
+    \item Q31 provides cascading. :contentReference[oaicite:39]{index=39}
+\end{itemize}
+
+\subsubsection*{SRL Cascading}
+Up to 128 cycles using 4 LUTs (SRL1--SRL4). Tables and diagrams shown in slides illustrate ranges
+:contentReference[oaicite:40]{index=40}.
+
+\subsection{Block RAM vs Distributed RAM}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Characteristic & Distributed RAM & Block RAM \\
+\hline
+Depth & $\le 128$ & large (512+) \\
+Width & $\le 8$ bits & up to 72 bits \\
+Read & async & sync \\
+Location & LUT fabric & BRAM tile \\
+\hline
+\end{tabular}
+\end{center}
+:contentReference[oaicite:41]{index=41}
+
+\subsection{Pipelining}
+Breaking long combinational paths into stages improves:
+\begin{itemize}
+    \item Frequency.
+    \item Throughput.
+    \item Timing closure. :contentReference[oaicite:42]{index=42}
+\end{itemize}
+
+Example:
+\[
+r = (a+b)\cdot c \quad\Rightarrow\quad
+\begin{aligned}
+    \text{Stage 1:}&\ a+b \\
+    \text{Stage 2:}&\ (a+b)\cdot c
+\end{aligned}
+\]
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lecture 26 Addendum: FPGA Implementation of 3×3 Convolution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Problem Definition}
+Compute 3×3 convolution over 28×28 image:
+\begin{itemize}
+    \item 9 multiplies + 8 adds/pixel. :contentReference[oaicite:43]{index=43}
+\end{itemize}
+
+\subsection{Resource Usage}
+\begin{itemize}
+    \item \textbf{Line buffers}: BRAM.
+    \item \textbf{Kernel coefficients}: Distributed RAM / registers.
+    \item \textbf{Window shift}: SRL32.
+    \item \textbf{Multiply}: DSP48E1.
+    \item \textbf{Adder tree}: CARRY4 chain. :contentReference[oaicite:44]{index=44}
+\end{itemize}
+
+\subsection{Pipeline Stages}
+\begin{enumerate}
+    \item Window extraction (BRAM/RAM).
+    \item 9 parallel multiplications.
+    \item Row partial sums.
+    \item Final accumulation.
+    \item Activation/normalization.
+    \item Output store. :contentReference[oaicite:45]{index=45}
+\end{enumerate}
+
+\end{document}
+
